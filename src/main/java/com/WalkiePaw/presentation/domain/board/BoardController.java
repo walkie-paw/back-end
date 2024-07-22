@@ -2,6 +2,7 @@ package com.WalkiePaw.presentation.domain.board;
 
 import com.WalkiePaw.domain.board.entity.BoardCategory;
 import com.WalkiePaw.domain.board.service.BoardService;
+import com.WalkiePaw.global.aspect.annotation.Trace;
 import com.WalkiePaw.presentation.domain.board.dto.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class BoardController {
     private final BoardService boardService;
     private static final String BOARD_URL = "/boards/";
 
+    @Trace
     @GetMapping("/list/{category}")
     public ResponseEntity<Slice<BoardListResponse>> getBoardList(
             final @PathVariable BoardCategory category,

@@ -45,7 +45,6 @@ public class Board extends BaseEntity {
     private BoardCategory category;
     private boolean priceProposal;
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    @BatchSize(size = 20)
     private List<BoardPhoto> photos = new ArrayList<>();
 
     @Builder
