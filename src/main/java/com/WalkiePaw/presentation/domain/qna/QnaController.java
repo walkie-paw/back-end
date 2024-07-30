@@ -1,7 +1,10 @@
 package com.WalkiePaw.presentation.domain.qna;
 
 import com.WalkiePaw.domain.qna.service.QnaService;
-import com.WalkiePaw.presentation.domain.qna.dto.*;
+import com.WalkiePaw.presentation.domain.qna.response.*;
+import com.WalkiePaw.presentation.domain.qna.request.QnaAddRequest;
+import com.WalkiePaw.presentation.domain.qna.request.QnaUpdateRequest;
+import com.WalkiePaw.presentation.domain.qna.request.replyUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

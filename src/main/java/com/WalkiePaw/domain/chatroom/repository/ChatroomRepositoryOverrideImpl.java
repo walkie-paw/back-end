@@ -1,11 +1,9 @@
 package com.WalkiePaw.domain.chatroom.repository;
 
-import com.WalkiePaw.domain.board.entity.BoardStatus;
 import com.WalkiePaw.domain.chatroom.entity.Chatroom;
-import com.WalkiePaw.domain.chatroom.entity.ChatroomStatus;
 import com.WalkiePaw.global.util.Querydsl4RepositorySupport;
-import com.WalkiePaw.presentation.domain.chatroom.dto.ChatroomListResponse;
-import com.WalkiePaw.presentation.domain.chatroom.dto.TransactionResponse;
+import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomListResponse;
+import com.WalkiePaw.presentation.domain.chatroom.response.TransactionResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
@@ -31,7 +29,7 @@ public class ChatroomRepositoryOverrideImpl extends Querydsl4RepositorySupport i
     }
 
     @Override
-    public Slice<ChatroomListResponse> findByMemberId(final Integer memberId, Pageable pageable) {
+    public Slice<ChatroomListResponse> findByMemberId(final Long memberId, Pageable pageable) {
         return slice(pageable,
                 query -> query.select(
                                 Projections.constructor(ChatroomListResponse.class,
@@ -59,7 +57,7 @@ public class ChatroomRepositoryOverrideImpl extends Querydsl4RepositorySupport i
     }
 
     @Override
-    public Page<TransactionResponse> findTransaction(final Integer memberId, Pageable pageable) {
+    public Page<TransactionResponse> findTransaction(final Long memberId, Pageable pageable) {
         return page(pageable,
                 page -> page.select(Projections.bean(TransactionResponse.class,
                                 chatroom.id.as("chatroomId"),
@@ -86,14 +84,14 @@ public class ChatroomRepositoryOverrideImpl extends Querydsl4RepositorySupport i
     }
 
     @Override
-    public Optional<Chatroom> findByMemberIdAndBoardId(final Integer memberId, final Integer boardId) {
+    public Optional<Chatroom> findByMemberIdAndBoardId(final Long memberId, final Long boardId) {
         return Optional.ofNullable(selectFrom(chatroom)
                 .where(chatroom.board.id.eq(boardId).and((chatroom.member.id.eq(memberId))))
                 .fetchFirst());
     }
 
     @Override
-    public Optional<Chatroom> findByWriterIdAndBoardId(final Integer writerId, final Integer boardId) {
+    public Optional<Chatroom> findByWriterIdAndBoardId(final Long writerId, final Long boardId) {
         return Optional.ofNullable(selectFrom(chatroom)
                 .where(chatroom.board.id.eq(boardId).and((chatroom.board.member.id.eq(writerId))))
                 .fetchFirst());

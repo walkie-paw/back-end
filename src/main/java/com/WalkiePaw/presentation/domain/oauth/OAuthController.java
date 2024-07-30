@@ -1,7 +1,7 @@
 package com.WalkiePaw.presentation.domain.oauth;
 
-import com.WalkiePaw.presentation.domain.oauth.dto.CodeRequest;
-import com.WalkiePaw.presentation.domain.oauth.dto.OAuthUserinfoResponse;
+import com.WalkiePaw.presentation.domain.oauth.request.CodeRequest;
+import com.WalkiePaw.presentation.domain.oauth.response.OAuthUserinfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;

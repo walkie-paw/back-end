@@ -3,13 +3,12 @@ package com.WalkiePaw.domain.member.Repository;
 import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.domain.member.entity.Role;
 import com.WalkiePaw.global.util.Querydsl4RepositorySupport;
-import com.WalkiePaw.presentation.domain.member.dto.MemberListResponse;
+import com.WalkiePaw.presentation.domain.member.response.MemberListResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.Optional;
 
 import static com.WalkiePaw.domain.member.entity.QMember.member;

@@ -1,7 +1,7 @@
 package com.WalkiePaw.presentation.domain.oauth;
 
-import com.WalkiePaw.presentation.domain.oauth.dto.CodeRequest;
-import com.WalkiePaw.presentation.domain.oauth.dto.OAuthUserinfoResponse;
+import com.WalkiePaw.presentation.domain.oauth.request.CodeRequest;
+import com.WalkiePaw.presentation.domain.oauth.response.OAuthUserinfoResponse;
 import com.WalkiePaw.presentation.domain.oauth.provider.KakaoOAuthProvider;
 import com.WalkiePaw.presentation.domain.oauth.provider.OAuthProvider;
 import org.springframework.stereotype.Component;

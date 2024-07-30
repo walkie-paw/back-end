@@ -8,7 +8,11 @@ import com.WalkiePaw.domain.board.repository.BoardRepository;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.global.exception.BadRequestException;
-import com.WalkiePaw.presentation.domain.board.dto.*;
+import com.WalkiePaw.presentation.domain.board.ImageDto;
+import com.WalkiePaw.presentation.domain.board.response.*;
+import com.WalkiePaw.presentation.domain.board.request.BoardAddRequest;
+import com.WalkiePaw.presentation.domain.board.request.BoardStatusUpdateRequest;
+import com.WalkiePaw.presentation.domain.board.request.BoardUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,7 +37,7 @@ public class BoardService {
     private final MemberRepository memberRepository;
     private final BoardPhotoRepository boardPhotoRepository;
 
-    public Slice<BoardListResponse> findAllBoardAndMember(final Integer memberId, final BoardCategory category, Pageable pageable) {
+    public Slice<BoardListResponse> findAllBoardAndMember(final Long memberId, final BoardCategory category, Pageable pageable) {
         if (memberId == null) {
             return boardRepository.findAllNotDeleted(category, pageable);
         } else {
@@ -42,9 +46,9 @@ public class BoardService {
     }
 
     @Transactional
-    public Integer save(final BoardAddRequest request) {
+    public Long save(final BoardAddRequest request) {
         Member member = memberRepository.findById(request.getMemberId()).orElseThrow();
-        Board entity = BoardAddRequest.toEntity(request, member);
+        Board entity = BoardAddRequest.toEntity(request, member.getId());
         Board board = boardRepository.save(entity);
         createBoardPhoto(request, board);
         return board.getId();
@@ -52,31 +56,32 @@ public class BoardService {
 
     private void createBoardPhoto(final BoardAddRequest request, final Board board) {
         request.getPhotoUrls().stream()
-                .map(i -> new BoardPhoto(i.getUrl()))
-                .map(boardPhotoRepository::save)
-                .toList().forEach(p -> p.addPhoto(board));
+                .map(i -> new BoardPhoto(i.getUrl(), board.getId()))
+                .forEach(boardPhotoRepository::save);
     }
 
 
-    public BoardGetResponse getBoard(Integer boardId) {
+    public BoardGetResponse getBoard(final Long boardId) {
         Board board = boardRepository.getBoardDetail(boardId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_ID));
-        return BoardGetResponse.from(board);
+        Member member = memberRepository.findById(board.getMemberId())
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+        return BoardGetResponse.from(board, member);
     }
 
     @Transactional
-    public void updateBoard(final Integer boardId, final BoardUpdateRequest request) {
+    public void updateBoard(final Long boardId, final BoardUpdateRequest request) {
         Board findBoard = boardRepository.findWithPhotoBy(boardId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_ID));
         updateFindBoardDetails(request, findBoard);
 
-        Set<String> existingPhotos = (Set<String>) findBoard.getPhotoUrls();
+        Set<String> existingPhotos = boardPhotoRepository.findAllByboardId(boardId).stream().map(BoardPhoto::getUrl).collect(Collectors.toSet());
         Set<String> newPhotos = request.getPhotoUrls().stream().map(ImageDto::getUrl).collect(Collectors.toSet());
 
         updatePhotosOnBoard(existingPhotos, newPhotos, findBoard);
     }
 
-    private void updatePhotosOnBoard(Set<String> existingPhotos, Set<String> newPhotos, Board findBoard) {
+    private void updatePhotosOnBoard(final Set<String> existingPhotos, final Set<String> newPhotos, final Board findBoard) {
         existingPhotos.removeIf(
                 p -> !newPhotos.contains(p));
 
@@ -85,11 +90,10 @@ public class BoardService {
                 .map(BoardPhoto::new)
                 .toList();
 
-        photosToAdd.forEach(bp -> bp.addPhoto(findBoard));
         boardPhotoRepository.saveAll(photosToAdd);
     }
 
-    private static void updateFindBoardDetails(BoardUpdateRequest request, Board findBoard) {
+    private static void updateFindBoardDetails(final BoardUpdateRequest request, final Board findBoard) {
         findBoard.update(request.getTitle(), request.getContent(), request.getPrice(), request.getStartTime(),
                 request.getEndTime(), request.getPriceType(), request.getLocation(), request.getDetailedLocation(), request.isPriceProposal());
     }
@@ -102,14 +106,14 @@ public class BoardService {
     }
 
     @Transactional
-    public void deleteBoard(final Integer boardId) {
+    public void deleteBoard(final Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_ID));
         board.delete();
     }
 
     public Slice<BoardListResponse> findBySearchCond(
-            final Integer memberId,
+            final Long memberId,
             final String title, final String content, final BoardCategory category, Pageable pageable) {
         if (memberId == null) {
             return boardRepository.findBySearchCond(title, content, category, pageable);
@@ -118,16 +122,7 @@ public class BoardService {
         }
     }
 
-    public Page<BoardMypageListResponse> findMyBoardsBy(final Integer memberId, final BoardCategory category, Pageable pageable) {
+    public Page<BoardMypageListResponse> findMyBoardsBy(final Long memberId, final BoardCategory category, Pageable pageable) {
         return boardRepository.findMyBoardsBy(memberId, category, pageable);
     }
-//
-//    @Transactional
-//    public Integer uploadPhoto(final Integer boardId, final String uploadURL, final String oriName) {
-//        Board board = boardRepository.findById(boardId)
-//                .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_ID));
-//        BoardPhoto boardPhoto = new BoardPhoto(oriName, uploadURL, board);
-//        boardPhoto.addPhoto(board);
-//        return boardPhotoRepository.save(boardPhoto).getId();
-//    }
 }

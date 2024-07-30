@@ -3,7 +3,6 @@ package com.WalkiePaw.domain.chatroom.entity;
 import com.WalkiePaw.domain.common.BaseEntity;
 import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.domain.board.entity.Board;
-import com.WalkiePaw.presentation.domain.chatroom.dto.ChatroomUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,15 +19,14 @@ public class Chatroom extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chatroom_id")
-    private Integer id;
+    private Long id;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "board_id")
-    private Board board;
+    private Long boardId;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    private Long recipientId;
+
+    private Long senderId;
+
     @Enumerated(EnumType.STRING)
     private ChatroomStatus status;
     @Enumerated(EnumType.STRING)
@@ -38,9 +36,10 @@ public class Chatroom extends BaseEntity {
     private LocalDateTime latestMessageTime;
     private LocalDateTime completedDate;
 
-    public Chatroom(Board board, Member member) {
-        this.board = board;
-        this.member = member;
+    public Chatroom(Long boardId, Long senderId, Long recipientId) {
+        this.boardId = boardId;
+        this.recipientId = recipientId;
+        this.senderId = senderId;
         this.status = ChatroomStatus.RECRUITING;
     }
 

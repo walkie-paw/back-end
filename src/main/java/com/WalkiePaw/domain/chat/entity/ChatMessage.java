@@ -17,29 +17,25 @@ public class ChatMessage extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_msg_id")
-    private Integer id;
+    private Long id;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "chatroom_id")
-    private Chatroom chatroom;
+    private Long chatroomId;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id")
-    private Member writer;
+    private Long writerId;
 
     private boolean isRead;
 
     @Column(name = "msg_content")
     private String content;
 
-    public ChatMessage(Chatroom chatroom, Member writer, String content) {
-        this.chatroom = chatroom;
-        this.writer = writer;
+    public ChatMessage(Long chatroomId, Long writerId, String content) {
+        this.chatroomId = chatroomId;
+        this.writerId = writerId;
         this.content = content;
     }
 
-    public ChatMessage(final Member writer, final String content) {
-        this.writer = writer;
+    public ChatMessage(final Long writerId, final String content) {
+        this.writerId = writerId;
         this.content = content;
     }
     //    /**

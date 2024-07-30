@@ -1,6 +1,6 @@
 package com.WalkiePaw.presentation.domain.oauth.provider;
 
-import com.WalkiePaw.presentation.domain.oauth.dto.OAuthUserinfoResponse;
+import com.WalkiePaw.presentation.domain.oauth.response.OAuthUserinfoResponse;
 
 public interface OAuthProvider {
     OAuthUserinfoResponse getUserInfo(final String code);

@@ -15,17 +15,15 @@ public class BoardLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_like_id")
-    private Integer id;
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "board_id")
-    private Board board;
+    private Long id;
 
-    public BoardLike(Member member, Board board) {
-        this.member = member;
-        this.board = board;
+    private Long memberId;
+
+    private Long boardId;
+
+    public BoardLike(Long memberId, Long boardId) {
+        this.memberId = memberId;
+        this.boardId = boardId;
     }
 
 //    /**

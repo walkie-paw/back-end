@@ -6,8 +6,8 @@ import com.WalkiePaw.domain.board.repository.BoardLikeRepository;
 import com.WalkiePaw.domain.board.repository.BoardRepository;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.domain.member.entity.Member;
-import com.WalkiePaw.presentation.domain.board.dto.BoardLikeRequest;
-import com.WalkiePaw.presentation.domain.board.dto.BoardListResponse;
+import com.WalkiePaw.presentation.domain.board.request.BoardLikeRequest;
+import com.WalkiePaw.presentation.domain.board.response.BoardListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -15,7 +15,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -33,14 +32,14 @@ public class BoardLikeService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public Slice<BoardListResponse> findLikeBoardList(final Integer memberId, final Pageable pageable) {
+    public Slice<BoardListResponse> findLikeBoardList(final Long memberId, final Pageable pageable) {
         return boardRepository.findLikeBoardList(memberId, pageable);
     }
 
-    public Integer saveBoardLike(final BoardLikeRequest request) {
+    public Long saveBoardLike(final BoardLikeRequest request) {
         Board board = boardRepository.findById(request.getBoardId()).orElseThrow();
         Member member = memberRepository.findById(request.getLoginUserId()).orElseThrow();
-        BoardLike boardLike = new BoardLike(member, board);
+        BoardLike boardLike = new BoardLike(member.getId(), board.getId());
         return boardLikeRepository.save(boardLike).getId();
     }
 

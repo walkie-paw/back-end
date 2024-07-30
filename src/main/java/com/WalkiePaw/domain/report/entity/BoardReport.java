@@ -3,7 +3,7 @@ package com.WalkiePaw.domain.report.entity;
 import com.WalkiePaw.domain.common.BaseEntity;
 import com.WalkiePaw.domain.board.entity.Board;
 import com.WalkiePaw.domain.member.entity.Member;
-import com.WalkiePaw.presentation.domain.report.boardReportDto.BoardReportUpdateRequest;
+import com.WalkiePaw.presentation.domain.report.boardReportDto.request.BoardReportUpdateRequest;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +14,7 @@ public class BoardReport extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_report_id")
-    private Integer id;
+    private Long id;
     @Column(name = "board_report_content")
     private String content;
     @Enumerated(EnumType.STRING)

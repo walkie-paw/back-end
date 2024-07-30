@@ -1,11 +1,11 @@
 package com.WalkiePaw.presentation.domain.chatroom;
 
-import com.WalkiePaw.domain.chatroom.entity.Chatroom;
-import com.WalkiePaw.presentation.domain.chatroom.dto.TransactionResponse;
+import com.WalkiePaw.presentation.domain.chatroom.request.ChatroomUpdateStatusRequest;
+import com.WalkiePaw.presentation.domain.chatroom.response.TransactionResponse;
 import com.WalkiePaw.domain.chatroom.service.ChatroomService;
-import com.WalkiePaw.presentation.domain.chatroom.dto.ChatroomAddRequest;
-import com.WalkiePaw.presentation.domain.chatroom.dto.ChatroomListResponse;
-import com.WalkiePaw.presentation.domain.chatroom.dto.ChatroomRespnose;
+import com.WalkiePaw.presentation.domain.chatroom.request.ChatroomAddRequest;
+import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomListResponse;
+import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomRespnose;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,25 +32,25 @@ public class ChatroomController {
 ///api/v1/{domain}/{id} -> delete : 삭제
 
     @GetMapping
-    public ResponseEntity<Slice<ChatroomListResponse>> getChatroomList(@RequestParam("id") final Integer memberId, Pageable pageable) {
+    public ResponseEntity<Slice<ChatroomListResponse>> getChatroomList(@RequestParam("id") final Long memberId, Pageable pageable) {
         Slice<ChatroomListResponse> chatrooms = chatroomService.findAllByMemberId(memberId, pageable);
         return ResponseEntity.ok(chatrooms);
     }
 
     @PostMapping
     public ResponseEntity<Void> addChatroom(final @RequestBody ChatroomAddRequest request) {
-        Integer id = chatroomService.saveChatroom(request);
+        Long id = chatroomService.saveChatroom(request);
         return ResponseEntity.created(URI.create(CHATROOM_URI + id)).build();
     }
 
     @GetMapping("/{memberId}")
-    public ResponseEntity<ChatroomRespnose> getChatroom(final @PathVariable Integer memberId, final @RequestParam("board_id") Integer boardId) {
+    public ResponseEntity<ChatroomRespnose> getChatroom(final @PathVariable Long memberId, final @RequestParam("board_id") Long boardId) {
         ChatroomRespnose chatroomById = chatroomService.findChatroomById(memberId, boardId);
         return ResponseEntity.ok(chatroomById);
     }
 
     @GetMapping("/{id}/transaction")
-    public ResponseEntity<Page<TransactionResponse>> getTransaction(final @PathVariable("id") Integer memberId, Pageable pageable) {
+    public ResponseEntity<Page<TransactionResponse>> getTransaction(final @PathVariable("id") Long memberId, Pageable pageable) {
         Page<TransactionResponse> transaction = chatroomService.findTransaction(memberId, pageable);
         return ResponseEntity.ok(transaction);
     }

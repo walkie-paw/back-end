@@ -7,12 +7,12 @@ import com.WalkiePaw.domain.chatroom.entity.Chatroom;
 import com.WalkiePaw.domain.chatroom.entity.ChatroomStatus;
 import com.WalkiePaw.domain.chatroom.repository.ChatroomRepository;
 import com.WalkiePaw.global.exception.BadRequestException;
-import com.WalkiePaw.presentation.domain.chatroom.dto.TransactionResponse;
+import com.WalkiePaw.presentation.domain.chatroom.response.TransactionResponse;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.domain.member.entity.Member;
-import com.WalkiePaw.presentation.domain.chatroom.dto.ChatroomAddRequest;
-import com.WalkiePaw.presentation.domain.chatroom.dto.ChatroomListResponse;
-import com.WalkiePaw.presentation.domain.chatroom.dto.ChatroomRespnose;
+import com.WalkiePaw.presentation.domain.chatroom.request.ChatroomAddRequest;
+import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomListResponse;
+import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomRespnose;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,7 +21,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.WalkiePaw.global.exception.ExceptionCode.INVALID_REQUEST;
 import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_CHATROOM_ID;
 
 @Service
@@ -33,12 +32,12 @@ public class ChatroomService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public Slice<ChatroomListResponse> findAllByMemberId(final Integer memberId, Pageable pageable) {
+    public Slice<ChatroomListResponse> findAllByMemberId(final Long memberId, Pageable pageable) {
         return chatroomRepository.findByMemberId(memberId, pageable);
     }
 
     @Transactional
-    public Integer saveChatroom(final ChatroomAddRequest request) {
+    public Long saveChatroom(final ChatroomAddRequest request) {
         Board board = boardRepository.findById(request.getBoardId())
                 .orElseThrow(() -> new IllegalStateException("잘못된 게시글 번호입니다."));
         Member member = memberRepository.findById(request.getMemberId())
@@ -47,7 +46,7 @@ public class ChatroomService {
         return chatroomRepository.save(chatroom).getId();
     }
 
-    public ChatroomRespnose findChatroomById(final Integer memberId, final Integer boardId) {
+    public ChatroomRespnose findChatroomById(final Long memberId, final Long boardId) {
         Chatroom chatroom = chatroomRepository.findByMemberIdAndBoardId(memberId, boardId)
                 .orElseGet(() ->
                         chatroomRepository.findByWriterIdAndBoardId(memberId, boardId)
@@ -55,13 +54,13 @@ public class ChatroomService {
         return ChatroomRespnose.toEntity(chatroom);
     }
 
-    public Page<TransactionResponse> findTransaction(final Integer memberId, final Pageable pageable) {
+    public Page<TransactionResponse> findTransaction(final Long memberId, final Pageable pageable) {
         return chatroomRepository.findTransaction(memberId, pageable);
     }
 
     @Transactional
     public void updateChatroomStatus(
-            final Integer chatroomId,
+            final Long chatroomId,
             final BoardStatus status
     ) {
         Chatroom chatroom = chatroomRepository.findChatroomAndBoardById(chatroomId)

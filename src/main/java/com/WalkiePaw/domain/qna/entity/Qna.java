@@ -2,8 +2,8 @@ package com.WalkiePaw.domain.qna.entity;
 
 import com.WalkiePaw.domain.common.BaseEntity;
 import com.WalkiePaw.domain.member.entity.Member;
-import com.WalkiePaw.presentation.domain.qna.dto.QnaUpdateRequest;
-import com.WalkiePaw.presentation.domain.qna.dto.replyUpdateRequest;
+import com.WalkiePaw.presentation.domain.qna.request.QnaUpdateRequest;
+import com.WalkiePaw.presentation.domain.qna.request.replyUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,7 +17,7 @@ public class Qna extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "qna_id")
-    private Integer id;
+    private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;

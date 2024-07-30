@@ -3,11 +3,10 @@ package com.WalkiePaw.domain.member.entity;
 import static com.WalkiePaw.domain.member.entity.Role.USER;
 
 import com.WalkiePaw.domain.common.BaseEntity;
-import com.WalkiePaw.presentation.domain.member.dto.MemberUpdateRequest;
-import com.WalkiePaw.presentation.domain.member.dto.SocialSignUpRequest;
-import com.WalkiePaw.presentation.domain.member.dto.UpdateSelectedAddrRequest;
+import com.WalkiePaw.presentation.domain.member.request.MemberUpdateRequest;
+import com.WalkiePaw.presentation.domain.member.request.SocialSignUpRequest;
+import com.WalkiePaw.presentation.domain.member.request.UpdateSelectedAddrRequest;
 import jakarta.persistence.*;
-import java.util.List;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
 
@@ -23,7 +22,7 @@ public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
-    private Integer id;
+    private Long id;
     @Column(name = "member_name")
     private String name;
     private String nickname;
@@ -129,7 +128,7 @@ public class Member extends BaseEntity {
         this.password = passwordEncoder.encode(this.password);
     }
 
-    public Integer updateBySocialSignUpRequest(final SocialSignUpRequest request) {
+    public Long updateBySocialSignUpRequest(final SocialSignUpRequest request) {
         this.nickname = request.getNickname();
         this.phoneNumber = request.getPhoneNumber();
         this.birth = request.getBirth();

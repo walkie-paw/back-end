@@ -1,10 +1,10 @@
 package com.WalkiePaw.presentation.domain.report;
 
 import com.WalkiePaw.domain.report.service.MemberReportService;
-import com.WalkiePaw.presentation.domain.report.memberReportDto.MemberReportAddRequest;
-import com.WalkiePaw.presentation.domain.report.memberReportDto.MemberReportGetResponse;
-import com.WalkiePaw.presentation.domain.report.memberReportDto.MemberReportListResponse;
-import com.WalkiePaw.presentation.domain.report.memberReportDto.MemberReportUpdateRequest;
+import com.WalkiePaw.presentation.domain.report.memberReportDto.request.MemberReportAddRequest;
+import com.WalkiePaw.presentation.domain.report.memberReportDto.response.MemberReportGetResponse;
+import com.WalkiePaw.presentation.domain.report.memberReportDto.response.MemberReportListResponse;
+import com.WalkiePaw.presentation.domain.report.memberReportDto.request.MemberReportUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -4,7 +4,8 @@ import com.WalkiePaw.domain.mail.service.MailService;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.global.exception.BadRequestException;
-import com.WalkiePaw.presentation.domain.member.dto.*;
+import com.WalkiePaw.presentation.domain.member.response.*;
+import com.WalkiePaw.presentation.domain.member.request.*;
 import com.WalkiePaw.security.CustomPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,19 +39,19 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberGetResponse findById(final Integer memberId) {
+    public MemberGetResponse findById(final Long memberId) {
         return MemberGetResponse.from(memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         ));
     }
 
-    public Integer save(final MemberAddRequest request) {
+    public Long save(final MemberAddRequest request) {
         Member member = request.toEntity();
         passwordEncoder.encodePassword(member);
         return memberRepository.save(member).getId();
     }
 
-    public void update(final Integer id, final MemberUpdateRequest request) {
+    public void update(final Long id, final MemberUpdateRequest request) {
         Member member = memberRepository.findById(id).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
@@ -58,20 +59,20 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberScoreResponse getMemberScore(final Integer memberId) {
+    public MemberScoreResponse getMemberScore(final Long memberId) {
         return MemberScoreResponse.from(memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         ));
     }
 
     @Transactional(readOnly = true)
-    public MemberRRCountResponse getMemberRRCount(final Integer memberId) {
+    public MemberRRCountResponse getMemberRRCount(final Long memberId) {
         return MemberRRCountResponse.from(memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         ));
     }
 
-    public void updatePasswd(final Integer memberId, final MemberPasswdUpdateRequest request) {
+    public void updatePasswd(final Long memberId, final MemberPasswdUpdateRequest request) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
@@ -86,21 +87,21 @@ public class MemberService {
         );
     }
 
-    public void draw(final Integer memberId) {
+    public void draw(final Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
         member.withdraw();
     }
 
-    public void ban(final Integer memberId) {
+    public void ban(final Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
         member.ban();
     }
 
-    public void general(final Integer memberId) {
+    public void general(final Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
@@ -173,21 +174,21 @@ public class MemberService {
         );
     }
 
-    public Integer socialSignUp(final SocialSignUpRequest request) {
+    public Long socialSignUp(final SocialSignUpRequest request) {
         Member member = memberRepository.findByEmail(request.getEmail()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_EMAIL)
         );
         return member.updateBySocialSignUpRequest(request);
     }
 
-    public void updateSeletedAddr(Integer memberId, UpdateSelectedAddrRequest request) {
+    public void updateSeletedAddr(Long memberId, UpdateSelectedAddrRequest request) {
         Member member = memberRepository.findById(memberId).orElseThrow(
             () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
         member.updateSelectedAdrrs(request);
     }
 
-    public AddressesGetResponse getAddressesByMemberId(Integer memberId) {
+    public AddressesGetResponse getAddressesByMemberId(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
             () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
@@ -195,7 +196,7 @@ public class MemberService {
         return AddressesGetResponse.from(member);
     }
 
-    public SideBarInfoResponse getSidebarinfoBy(Integer memberId) {
+    public SideBarInfoResponse getSidebarinfoBy(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );

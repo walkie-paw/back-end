@@ -12,7 +12,7 @@ public class ChatPhoto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_photo_id_v2")
-    private Integer id;
+    private Long id;
     private String oriName;
     private String uuidName;
     @ManyToOne(fetch = FetchType.LAZY)

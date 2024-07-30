@@ -1,7 +1,10 @@
 package com.WalkiePaw.presentation.domain.report;
 
 import com.WalkiePaw.domain.report.service.BoardReportService;
-import com.WalkiePaw.presentation.domain.report.boardReportDto.*;
+import com.WalkiePaw.presentation.domain.report.boardReportDto.request.BoardReportAddRequest;
+import com.WalkiePaw.presentation.domain.report.boardReportDto.request.BoardReportUpdateRequest;
+import com.WalkiePaw.presentation.domain.report.boardReportDto.response.BoardReportGetResponse;
+import com.WalkiePaw.presentation.domain.report.boardReportDto.response.BoardReportListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

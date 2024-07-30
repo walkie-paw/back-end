@@ -13,7 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @Profile("jpa")
-public class ChatMsgRepositoryImpl implements ChatMsgRepository {
+public class ChatMsgRepositoryImpl{
     private final EntityManager em;
 
 
@@ -22,19 +22,14 @@ public class ChatMsgRepositoryImpl implements ChatMsgRepository {
 //        return em.find(ChatMessage.class, chatMsgId);
 //    }
 //
-    @Override
     public List<ChatMessage> findByChatroomId(final Integer chatroomId) {
         return em.createQuery("select cm from ChatMessage cm where cm.chatroom.id = :chatroomId", ChatMessage.class)
                 .setParameter("chatroomId", chatroomId)
                 .getResultList();
     }
 
-    @Override
     public ChatMessage save(final ChatMessage message) {
         return null;
     }
 
-    public void bulkIsRead(final Integer chatroomId) {
-
-    }
 }

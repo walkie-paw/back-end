@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface BoardLikeRepository extends JpaRepository<BoardLike, Integer> {
-    BoardLike findByMemberIdAndBoardId(Integer memberId, Integer boardId);
+public interface BoardLikeRepository extends JpaRepository<BoardLike, Long> {
+    BoardLike findByMemberIdAndBoardId(Long memberId, Long boardId);
 
     @Query("select bl.board.id, count(bl) from BoardLike bl group by bl.board.id")
     List<Integer[]> countAllBoardLike();

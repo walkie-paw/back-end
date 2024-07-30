@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Profile("spring-data-jpa")
-public interface ChatroomRepository extends JpaRepository<Chatroom, Integer>, ChatroomRepositoryOverride {
+public interface ChatroomRepository extends JpaRepository<Chatroom, Long>, ChatroomRepositoryOverride {
 
-    List<Chatroom> findByMemberId(final Integer memberId);
+    List<Chatroom> findByMemberId(final Long memberId);
 
     @EntityGraph(attributePaths = {"board"})
-    Optional<Chatroom> findChatroomAndBoardById(Integer chatroomId);
+    Optional<Chatroom> findChatroomAndBoardById(Long chatroomId);
 
 }

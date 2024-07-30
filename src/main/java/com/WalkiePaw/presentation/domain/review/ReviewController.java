@@ -2,10 +2,10 @@ package com.WalkiePaw.presentation.domain.review;
 
 import com.WalkiePaw.domain.board.entity.BoardCategory;
 import com.WalkiePaw.domain.review.service.ReviewService;
-import com.WalkiePaw.presentation.domain.review.dto.ReviewDetailResponse;
-import com.WalkiePaw.presentation.domain.review.dto.ReviewListResponse;
-import com.WalkiePaw.presentation.domain.review.dto.ReviewSaveRequest;
-import com.WalkiePaw.presentation.domain.review.dto.ReviewUpdateRequest;
+import com.WalkiePaw.presentation.domain.review.response.ReviewDetailResponse;
+import com.WalkiePaw.presentation.domain.review.response.ReviewListResponse;
+import com.WalkiePaw.presentation.domain.review.request.ReviewSaveRequest;
+import com.WalkiePaw.presentation.domain.review.request.ReviewUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @Controller
 @RequiredArgsConstructor

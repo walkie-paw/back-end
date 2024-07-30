@@ -1,8 +1,8 @@
 package com.WalkiePaw.presentation.domain.oauth.provider;
 
-import com.WalkiePaw.presentation.domain.oauth.dto.KakaoUserInfoResponse;
-import com.WalkiePaw.presentation.domain.oauth.dto.OAuthUserinfoResponse;
-import com.WalkiePaw.presentation.domain.oauth.dto.OauthAccessToken;
+import com.WalkiePaw.presentation.domain.oauth.response.KakaoUserInfoResponse;
+import com.WalkiePaw.presentation.domain.oauth.response.OAuthUserinfoResponse;
+import com.WalkiePaw.presentation.domain.oauth.response.OauthAccessToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;

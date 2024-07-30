@@ -2,7 +2,7 @@ package com.WalkiePaw.domain.report.entity;
 
 import com.WalkiePaw.domain.common.BaseEntity;
 import com.WalkiePaw.domain.member.entity.Member;
-import com.WalkiePaw.presentation.domain.report.memberReportDto.MemberReportUpdateRequest;
+import com.WalkiePaw.presentation.domain.report.memberReportDto.request.MemberReportUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,7 +15,7 @@ public class MemberReport extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_report_id")
-    private Integer id;
+    private Long id;
     @Column(name = "member_report_title")
     private String title;
     @Column(name = "member_report_content")

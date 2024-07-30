@@ -1,9 +1,6 @@
 package com.WalkiePaw.domain.report.repository.BoardReport;
 
-import com.WalkiePaw.domain.report.entity.BoardReport;
-
-import com.WalkiePaw.presentation.domain.report.boardReportDto.BoardReportListResponse;
-import java.util.List;
+import com.WalkiePaw.presentation.domain.report.boardReportDto.response.BoardReportListResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

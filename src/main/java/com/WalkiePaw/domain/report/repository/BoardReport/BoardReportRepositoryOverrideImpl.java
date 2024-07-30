@@ -3,11 +3,10 @@ package com.WalkiePaw.domain.report.repository.BoardReport;
 import com.WalkiePaw.domain.report.entity.BoardReport;
 import com.WalkiePaw.domain.report.entity.BoardReportStatus;
 import com.WalkiePaw.global.util.Querydsl4RepositorySupport;
-import com.WalkiePaw.presentation.domain.report.boardReportDto.BoardReportListResponse;
+import com.WalkiePaw.presentation.domain.report.boardReportDto.response.BoardReportListResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

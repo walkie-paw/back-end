@@ -3,7 +3,10 @@ package com.WalkiePaw.presentation.domain.board;
 import com.WalkiePaw.domain.board.entity.BoardCategory;
 import com.WalkiePaw.domain.board.service.BoardService;
 import com.WalkiePaw.global.aspect.annotation.Trace;
-import com.WalkiePaw.presentation.domain.board.dto.*;
+import com.WalkiePaw.presentation.domain.board.response.*;
+import com.WalkiePaw.presentation.domain.board.request.BoardAddRequest;
+import com.WalkiePaw.presentation.domain.board.request.BoardStatusUpdateRequest;
+import com.WalkiePaw.presentation.domain.board.request.BoardUpdateRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +32,7 @@ public class BoardController {
     @GetMapping("/list/{category}")
     public ResponseEntity<Slice<BoardListResponse>> getBoardList(
             final @PathVariable BoardCategory category,
-            final @RequestParam(required = false) Integer memberId,
+            final @RequestParam(required = false) Long memberId,
             Pageable pageable) {
         Slice<BoardListResponse> boardListResponses = boardService.findAllBoardAndMember(memberId, category, pageable);
         return ResponseEntity.ok(boardListResponses);
@@ -37,7 +40,7 @@ public class BoardController {
 
     @GetMapping("/mypage/{memberId}/{category}")
     public ResponseEntity<Page<BoardMypageListResponse>> mypageList(
-            @PathVariable Integer memberId,
+            @PathVariable Long memberId,
             @PathVariable BoardCategory category,
             Pageable pageable
     ) {
@@ -47,18 +50,18 @@ public class BoardController {
 
     @PostMapping
     public ResponseEntity<Void> addBoard(final @Valid @RequestBody BoardAddRequest request) {
-        Integer saveId = boardService.save(request);
+        Long saveId = boardService.save(request);
         return ResponseEntity.created(URI.create(BOARD_URL + saveId)).build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BoardGetResponse> getBoard(final @PathVariable("id") Integer boardId) {
+    public ResponseEntity<BoardGetResponse> getBoard(final @PathVariable("id") Long boardId) {
         BoardGetResponse board = boardService.getBoard(boardId);
         return ResponseEntity.ok(board);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateBoard(final @PathVariable("id") Integer boardId, final @RequestBody BoardUpdateRequest request) {
+    public ResponseEntity<Void> updateBoard(final @PathVariable("id") Long boardId, final @RequestBody BoardUpdateRequest request) {
         boardService.updateBoard(boardId, request);
         return ResponseEntity.noContent().build();
     }
@@ -70,14 +73,14 @@ public class BoardController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBoard(final @PathVariable("id") Integer boardId) {
+    public ResponseEntity<Void> deleteBoard(final @PathVariable("id") Long boardId) {
         boardService.deleteBoard(boardId);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/search")
     public ResponseEntity<Slice<BoardListResponse>> searchBoard(
-            final @RequestParam(required = false) Integer memberId,
+            final @RequestParam(required = false) Long memberId,
             final @RequestParam(required = false) String title,
             final @RequestParam(required = false) String content,
             final @RequestParam(required = false) BoardCategory category,

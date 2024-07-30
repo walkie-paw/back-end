@@ -24,10 +24,8 @@ public class Board extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "board_id")
-    private Integer id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    private Long id;
+    private Long memberId;
     private String title;
     private String content;
     private int price;
@@ -44,16 +42,14 @@ public class Board extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private BoardCategory category;
     private boolean priceProposal;
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    private List<BoardPhoto> photos = new ArrayList<>();
 
     @Builder
     public Board(
-            Member member, String title, String content, int price,
+            Long memberId, String title, String content, int price,
             LocalDateTime startTime, LocalDateTime endTime, PriceType priceType,
             String location, String detailedLocation, BoardCategory category, boolean priceProposal) {
         this.priceType = priceType;
-        this.member = member;
+        this.memberId = memberId;
         this.title = title;
         this.content = content;
         this.price = price;
@@ -66,8 +62,8 @@ public class Board extends BaseEntity {
         status = BoardStatus.RECRUITING;
     }
 
-    public void updateMember(Member member) {
-        this.member = member;
+    public void updateMember(Long memberId) {
+        this.memberId = memberId;
     }
 
     public void updateTitle(String title, String content) {
@@ -100,19 +96,6 @@ public class Board extends BaseEntity {
 
     public void updateStatus(final BoardStatus status) {
         this.status = status;
-    }
-
-    public void updatePhoto(final List<String> photos) {
-        this.photos.clear();
-        photos.stream()
-                .map(BoardPhoto::new)
-                .forEach(p -> p.addPhoto(this));
-    }
-
-    public Collection<String> getPhotoUrls() {
-        return this.getPhotos().stream()
-                .map(BoardPhoto::getUrl)
-                .collect(Collectors.toCollection(this::getPhotoUrls));
     }
 
     public void updateBoardLike(final int likeCount) {

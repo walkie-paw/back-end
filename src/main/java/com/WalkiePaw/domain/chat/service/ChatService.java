@@ -6,8 +6,8 @@ import com.WalkiePaw.domain.chatroom.entity.Chatroom;
 import com.WalkiePaw.domain.chatroom.repository.ChatroomRepository;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.domain.member.entity.Member;
-import com.WalkiePaw.presentation.domain.chat.dto.ChatAddRequest;
-import com.WalkiePaw.presentation.domain.chat.dto.ChatMsgListResponse;
+import com.WalkiePaw.presentation.domain.chat.request.ChatAddRequest;
+import com.WalkiePaw.presentation.domain.chat.response.ChatMsgListResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ public class ChatService {
     private final ChatroomRepository chatroomRepository;
     private final MemberRepository memberRepository;
 
-    public List<ChatMsgListResponse> findChatsByChatroomId(final Integer chatroomId) {
+    public List<ChatMsgListResponse> findChatsByChatroomId(final Long chatroomId) {
         List<ChatMessage> chatMessagesList = chatMsgRepository.findByChatroomId(chatroomId);
         return chatMessagesList.stream()
                 .map(ChatMsgListResponse::from)
@@ -33,7 +33,7 @@ public class ChatService {
     }
 
     @Transactional
-    public ChatMsgListResponse saveChatMsg(Integer chatroomId, final ChatAddRequest request) {
+    public ChatMsgListResponse saveChatMsg(final Long chatroomId, final ChatAddRequest request) {
         Chatroom chatroom = chatroomRepository.findById(chatroomId)
                 .orElseThrow(() -> new IllegalStateException("잘못된 채팅방 번호입니다."));
         Member member = memberRepository.findById(request.getWriterId())
@@ -43,7 +43,7 @@ public class ChatService {
         return ChatMsgListResponse.from(chatMsgRepository.save(chatMsg));
     }
 
-    public void bulkUpdateIsRead(final Integer chatroomId) {
+    public void bulkUpdateIsRead(final Long chatroomId) {
         chatMsgRepository.bulkIsRead(chatroomId);
     }
 }

@@ -1,7 +1,5 @@
 package com.WalkiePaw.global.util;
 
-import com.WalkiePaw.presentation.domain.board.dto.BoardListResponse;
-import com.querydsl.core.support.QueryBase;
 import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.PathBuilder;
@@ -17,8 +15,6 @@ import org.springframework.data.querydsl.SimpleEntityPathResolver;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.function.Function;
 
