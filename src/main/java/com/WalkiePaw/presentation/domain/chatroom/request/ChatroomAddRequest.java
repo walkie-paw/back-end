@@ -11,11 +11,14 @@ import lombok.Data;
 public class ChatroomAddRequest {
 
     private final Long boardId;
-    private final Long memberId;
+    private final Long senderId;
+    private final Long recipientId;
 
     public static Chatroom toEntity(
-            final Board board, final Member member
+            final Long boardId,
+            final Long senderId,
+            final Long recipientId
             ) {
-        return new Chatroom(board, member);
+        return new Chatroom(boardId, senderId, recipientId);
     }
 }

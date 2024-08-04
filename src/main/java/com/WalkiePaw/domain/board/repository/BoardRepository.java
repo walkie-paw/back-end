@@ -13,7 +13,9 @@ import java.util.Set;
 @Profile("spring-data-jpa")
 public interface BoardRepository extends JpaRepository<Board, Long>, BoardRepositoryOverride {
 
-    @Query("select b from Board b left join member m on b.memberId = m.id where b.id = :id")
+    @Query("select b from Board b " +
+            "left join Member m on b.memberId = m.id where b.id = :id " +
+            "left join BoardPhoto bp on b.id = bp.boardId")
     Optional<Board> getBoardDetail(@Param("id") Long boardId);
 
     Set<Board> findAllByIdIn(Set<Integer> integers);

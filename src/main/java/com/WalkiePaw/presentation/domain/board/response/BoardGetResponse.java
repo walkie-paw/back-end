@@ -1,9 +1,6 @@
 package com.WalkiePaw.presentation.domain.board.response;
 
-import com.WalkiePaw.domain.board.entity.Board;
-import com.WalkiePaw.domain.board.entity.BoardCategory;
-import com.WalkiePaw.domain.board.entity.BoardStatus;
-import com.WalkiePaw.domain.board.entity.PriceType;
+import com.WalkiePaw.domain.board.entity.*;
 import com.WalkiePaw.domain.member.entity.Member;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,12 +37,13 @@ public class BoardGetResponse {
      * @param board Entity
      * @return BoardGetResponse
      */
-    public static BoardGetResponse from(final Board board, final Member member) {
+    public static BoardGetResponse from(final Board board, final Member member, final List<BoardPhoto> boardPhoto) {
+        List<String> photoUrls = boardPhoto.stream().map(BoardPhoto::getUrl).toList();
         return new BoardGetResponse(board.getId(), board.getStatus(),
             board.getDetailedLocation(), board.getLocation(), board.getTitle(), board.getCategory(),
             board.getContent(), board.isPriceProposal(),
             board.getPrice(), board.getPriceType(), board.getEndTime(),
-            board.getStartTime(), member.getNickname(), (List<String>) board.getPhotoUrls(), member.getPhoto(), member.getId()
+            board.getStartTime(), member.getNickname(), photoUrls, member.getPhoto(), member.getId()
         );
     }
 }

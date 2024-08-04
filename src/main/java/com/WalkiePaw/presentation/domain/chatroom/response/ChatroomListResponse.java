@@ -59,9 +59,4 @@ public class ChatroomListResponse {
         this.memberPhoto = memberPhoto;
     }
 
-    public static ChatroomListResponse from(final Chatroom chatroom) {
-        return new ChatroomListResponse(chatroom.getId(), chatroom.getBoard().getLocation(),
-                 chatroom.getMember().getNickname(), chatroom.getLatestMessage(), chatroom.getModifiedDate(), chatroom.getUnreadCount(), chatroom.getBoard()
-            .getTitle(), chatroom.getMember().getPhoto());
-    }
 }

@@ -66,7 +66,8 @@ public class BoardService {
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_ID));
         Member member = memberRepository.findById(board.getMemberId())
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
-        return BoardGetResponse.from(board, member);
+        List<BoardPhoto> boardPhotos = boardPhotoRepository.findAllByboardId(boardId);
+        return BoardGetResponse.from(board, member, boardPhotos);
     }
 
     @Transactional

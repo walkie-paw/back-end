@@ -13,8 +13,9 @@ import lombok.NoArgsConstructor;
 public class Transaction extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "transaction_id")
-    private Integer id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chatroom_id")
-    private Chatroom chatroom;
+    private Long id;
+    private Long chatroomId;
+    private Long senderId;
+    private Long recipientId;
+    private double rating;
 }

@@ -7,12 +7,11 @@ import com.WalkiePaw.domain.chatroom.entity.Chatroom;
 import com.WalkiePaw.domain.chatroom.entity.ChatroomStatus;
 import com.WalkiePaw.domain.chatroom.repository.ChatroomRepository;
 import com.WalkiePaw.global.exception.BadRequestException;
-import com.WalkiePaw.presentation.domain.chatroom.response.TransactionResponse;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
-import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.presentation.domain.chatroom.request.ChatroomAddRequest;
 import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomListResponse;
 import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomRespnose;
+import com.WalkiePaw.presentation.domain.chatroom.response.TransactionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,7 +20,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_CHATROOM_ID;
+import static com.WalkiePaw.global.exception.ExceptionCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -38,14 +37,30 @@ public class ChatroomService {
 
     @Transactional
     public Long saveChatroom(final ChatroomAddRequest request) {
-        Board board = boardRepository.findById(request.getBoardId())
-                .orElseThrow(() -> new IllegalStateException("잘못된 게시글 번호입니다."));
-        Member member = memberRepository.findById(request.getMemberId())
-                .orElseThrow(() -> new IllegalStateException("잘못된 회원 번호입니다."));
-        Chatroom chatroom = ChatroomAddRequest.toEntity(board, member);
+        existsBoard(request);
+        existsMember(request);
+        Chatroom chatroom = ChatroomAddRequest.toEntity(request.getBoardId(), request.getSenderId(), request.getRecipientId());
         return chatroomRepository.save(chatroom).getId();
     }
 
+    private void existsMember(ChatroomAddRequest request) {
+        boolean existsRecipient = memberRepository.existsById(request.getRecipientId());
+        boolean existsSender = memberRepository.existsById(request.getSenderId());
+        if (!existsSender || !existsRecipient) {
+            throw new BadRequestException(NOT_FOUND_MEMBER_ID);
+        }
+    }
+
+    private void existsBoard(ChatroomAddRequest request) {
+        boolean existsBoard = boardRepository.existsById(request.getBoardId());
+        if (!existsBoard) {
+            throw new BadRequestException(NOT_FOUND_BOARD_ID);
+        }
+    }
+
+    /**
+     * TODO - 로직 수정하기
+     */
     public ChatroomRespnose findChatroomById(final Long memberId, final Long boardId) {
         Chatroom chatroom = chatroomRepository.findByMemberIdAndBoardId(memberId, boardId)
                 .orElseGet(() ->
@@ -66,7 +81,9 @@ public class ChatroomService {
         Chatroom chatroom = chatroomRepository.findChatroomAndBoardById(chatroomId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHATROOM_ID));
         // BoardStatus 업데이트
-        chatroom.getBoard().updateStatus(status);
+        Board board = boardRepository.findById(chatroom.getBoardId())
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHATROOM_ID));
+        board.updateStatus(status);
         // ChatroomStatus 업데이트
         ChatroomStatus chatroomStatus = ChatroomStatus.valueOf(status.name());
         chatroom.updateStatus(chatroomStatus);
