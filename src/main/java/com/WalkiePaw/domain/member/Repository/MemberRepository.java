@@ -25,4 +25,5 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     Optional<Member> findBySocialTypeAndSocialId(SocialType socialType, String socialId);
 
+    Set<Member> findByIdIn(List<Long> list);
 }

@@ -6,6 +6,8 @@ import com.WalkiePaw.domain.chatroom.entity.Chatroom;
 import com.WalkiePaw.domain.chatroom.repository.ChatroomRepository;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.domain.member.entity.Member;
+import com.WalkiePaw.global.exception.BadRequestException;
+import com.WalkiePaw.global.exception.ExceptionCode;
 import com.WalkiePaw.presentation.domain.chat.request.ChatAddRequest;
 import com.WalkiePaw.presentation.domain.chat.response.ChatMsgListResponse;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+
+import static com.WalkiePaw.global.exception.ExceptionCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -26,21 +31,28 @@ public class ChatService {
     private final MemberRepository memberRepository;
 
     public List<ChatMsgListResponse> findChatsByChatroomId(final Long chatroomId) {
-        List<ChatMessage> chatMessagesList = chatMsgRepository.findByChatroomId(chatroomId);
+        List<ChatMessage> chatMessagesList = chatMsgRepository.findWithMemberByChatroomId(chatroomId);
+        Set<Member> members = memberRepository.findByIdIn(chatMessagesList.stream().map(ChatMessage::getWriterId).toList());
         return chatMessagesList.stream()
-                .map(ChatMsgListResponse::from)
+                .map(
+                        cm -> {
+                            Member writer = members.stream().filter(m -> m.getId().equals(cm.getWriterId())).findAny()
+                                    .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+                            return ChatMsgListResponse.from(cm, writer.getNickname());
+                        }
+                )
                 .toList();
     }
 
     @Transactional
     public ChatMsgListResponse saveChatMsg(final Long chatroomId, final ChatAddRequest request) {
-        Chatroom chatroom = chatroomRepository.findById(chatroomId)
-                .orElseThrow(() -> new IllegalStateException("잘못된 채팅방 번호입니다."));
+        Chatroom chatroom = chatroomRepository.findWithMemberById(chatroomId, request.getWriterId())
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHATROOM_ID));
         Member member = memberRepository.findById(request.getWriterId())
-                .orElseThrow();
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
         chatroom.updateLatestMessage(request.getContent());
-        ChatMessage chatMsg = request.toEntity(request, member, chatroom);
-        return ChatMsgListResponse.from(chatMsgRepository.save(chatMsg));
+        ChatMessage chatMsg = request.toEntity(request, chatroomId);
+        return ChatMsgListResponse.from(chatMsgRepository.save(chatMsg), request.getNickname());
     }
 
     public void bulkUpdateIsRead(final Long chatroomId) {
