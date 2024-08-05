@@ -62,9 +62,9 @@ public class ChatroomService {
      * TODO - 로직 수정하기
      */
     public ChatroomRespnose findChatroomById(final Long memberId, final Long boardId) {
-        Chatroom chatroom = chatroomRepository.findByMemberIdAndBoardId(memberId, boardId)
+        Chatroom chatroom = chatroomRepository.findBySenderIdAndBoardId(memberId, boardId)
                 .orElseGet(() ->
-                        chatroomRepository.findByWriterIdAndBoardId(memberId, boardId)
+                        chatroomRepository.findByRecipientIdAndBoardId(memberId, boardId)
                                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHATROOM_ID)));
         return ChatroomRespnose.toEntity(chatroom);
     }

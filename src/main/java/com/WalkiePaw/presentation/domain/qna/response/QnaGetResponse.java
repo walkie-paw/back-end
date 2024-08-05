@@ -1,5 +1,6 @@
 package com.WalkiePaw.presentation.domain.qna.response;
 
+import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.domain.qna.entity.Qna;
 import com.WalkiePaw.domain.qna.entity.QnaStatus;
 import lombok.AllArgsConstructor;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class QnaGetResponse {
 
-    private Integer qnaId;
+    private Long qnaId;
     private String writerName;
     private String title;
     private String content;
@@ -23,10 +24,10 @@ public class QnaGetResponse {
     /**
      * 엔티티를 dto로 변환하는 메서드
      */
-    public static QnaGetResponse from(Qna qna) {
+    public static QnaGetResponse from(Qna qna, Member member) {
         return new QnaGetResponse(
                 qna.getId(),
-                qna.getMember().getName(),
+                member.getName(),
                 qna.getTitle(),
                 qna.getContent(),
                 qna.getReply(),

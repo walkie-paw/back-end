@@ -8,5 +8,5 @@ public interface QnaRepositoryOverride {
 
     Page<QnaListResponse> findAllByCond(String status, Pageable pageable);
 
-    Page<QnaListResponse> findByMemberId(Integer memberId, Pageable pageable);
+    Page<QnaListResponse> findByMemberId(Long memberId, Pageable pageable);
 }

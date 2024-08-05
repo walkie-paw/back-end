@@ -14,7 +14,7 @@ public interface ChatroomRepositoryOverride {
 
     Page<TransactionResponse> findTransaction(Long memberId, Pageable pageable);
 
-    Optional<Chatroom> findByMemberIdAndBoardId(Long MemberId, Long boardId);
+    Optional<Chatroom> findBySenderIdAndBoardId(Long MemberId, Long boardId);
 
-    Optional<Chatroom> findByWriterIdAndBoardId(Long writerId, Long boardId);
+    Optional<Chatroom> findByRecipientIdAndBoardId(Long writerId, Long boardId);
 }

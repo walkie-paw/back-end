@@ -121,7 +121,7 @@ public class MemberService {
 
     public FindEmailResponse findEmail(final FindEmailRequest request) {
         Member member = memberRepository.findByNameAndPhoneNumber(request.getName(), request.getPhoneNumber()).orElseThrow(
-                () -> new BadRequestException(NOT_FOUND_MEMBER)
+                () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
         return new FindEmailResponse(maskedMail(member.getEmail()));
     }

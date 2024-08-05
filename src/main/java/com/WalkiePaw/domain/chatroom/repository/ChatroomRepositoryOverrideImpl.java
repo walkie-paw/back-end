@@ -2,10 +2,12 @@ package com.WalkiePaw.domain.chatroom.repository;
 
 import com.WalkiePaw.domain.chatroom.entity.Chatroom;
 import com.WalkiePaw.domain.member.entity.QMember;
+import com.WalkiePaw.domain.review.entity.QReview;
 import com.WalkiePaw.global.util.Querydsl4RepositorySupport;
 import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomListResponse;
 import com.WalkiePaw.presentation.domain.chatroom.response.TransactionResponse;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +20,7 @@ import static com.WalkiePaw.domain.board.entity.QBoard.board;
 import static com.WalkiePaw.domain.chatroom.entity.ChatroomStatus.COMPLETED;
 import static com.WalkiePaw.domain.chatroom.entity.QChatroom.*;
 import static com.WalkiePaw.domain.member.entity.QMember.member;
+import static com.WalkiePaw.domain.review.entity.QReview.review;
 
 @Repository
 public class ChatroomRepositoryOverrideImpl extends Querydsl4RepositorySupport implements ChatroomRepositoryOverride {
@@ -68,37 +71,36 @@ public class ChatroomRepositoryOverrideImpl extends Querydsl4RepositorySupport i
                 page -> page.select(Projections.bean(TransactionResponse.class,
                                 chatroom.id.as("chatroomId"),
                                 board.title.as("title"),
-                                sender.nickname,
-                                recipient.nickname,
+                                new CaseBuilder()
+                                        .when(sender.isNull()).then(recipient.nickname)
+                                        .when(recipient.isNull()).then(sender.nickname)
+                                        .otherwise(""),
                                 chatroom.completedDate.as("createdDate"),
-                                Expressions.booleanTemplate("CASE WHEN {0} = {1} THEN {2} ELSE {3} END",
-                                        memberId, chatroom.member.id,
-                                        JPAExpressions.selectOne().from(review)
-                                                .where(review.reviewer.id.eq(chatroom.member.id)
-                                                        .and(review.chatroom.id.eq(chatroom.id))).exists(),
-                                        JPAExpressions.selectOne().from(review)
-                                                .where(review.reviewer.id.eq(chatroom.board.member.id)
-                                                        .and(review.chatroom.id.eq(chatroom.id))).exists()).as("hasReview"),
+                                review.isNotNull().as("hasReview"),
                                 board.category.as("category")
                         ))
                         .from(chatroom)
                         .leftJoin(board).on(board.id.eq(chatroom.boardId))
                         .leftJoin(sender).on(chatroom.senderId.eq(memberId))
-                        .leftJoin(recipient).on(chatroom.recipientId.eq(memberId)));
+                        .leftJoin(recipient).on(chatroom.recipientId.eq(memberId))
+                        .leftJoin(review).on(review.chatroomId.eq(chatroom.id)
+                                .and(review.reviewerId.eq(memberId)))
+                        .where(chatroom.status.eq(COMPLETED))
+        );
     }
 
 
     @Override
-    public Optional<Chatroom> findByMemberIdAndBoardId(final Long memberId, final Long boardId) {
+    public Optional<Chatroom> findBySenderIdAndBoardId(final Long memberId, final Long boardId) {
         return Optional.ofNullable(selectFrom(chatroom)
-                .where(chatroom.board.id.eq(boardId).and((chatroom.member.id.eq(memberId))))
+                .where(chatroom.boardId.eq(boardId).and(chatroom.senderId.eq(memberId)))
                 .fetchFirst());
     }
 
     @Override
-    public Optional<Chatroom> findByWriterIdAndBoardId(final Long writerId, final Long boardId) {
+    public Optional<Chatroom> findByRecipientIdAndBoardId(final Long writerId, final Long boardId) {
         return Optional.ofNullable(selectFrom(chatroom)
-                .where(chatroom.board.id.eq(boardId).and((chatroom.board.member.id.eq(writerId))))
+                .where(chatroom.boardId.eq(boardId).and(chatroom.recipientId.eq(writerId)))
                 .fetchFirst());
     }
 

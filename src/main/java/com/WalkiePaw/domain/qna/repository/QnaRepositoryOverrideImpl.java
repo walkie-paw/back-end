@@ -1,5 +1,6 @@
 package com.WalkiePaw.domain.qna.repository;
 
+import com.WalkiePaw.domain.member.entity.QMember;
 import com.WalkiePaw.domain.qna.entity.Qna;
 import com.WalkiePaw.domain.qna.entity.QnaStatus;
 import com.WalkiePaw.global.util.Querydsl4RepositorySupport;
@@ -9,6 +10,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import static com.WalkiePaw.domain.member.entity.QMember.member;
 import static com.WalkiePaw.domain.qna.entity.QQna.qna;
 import static org.springframework.util.StringUtils.hasText;
 
@@ -20,33 +22,37 @@ public class QnaRepositoryOverrideImpl extends Querydsl4RepositorySupport implem
 
     @Override
     public Page<QnaListResponse> findAllByCond(final String status, Pageable pageable) {
-        return page(pageable, page -> page.select(Projections.fields(QnaListResponse.class,
-                qna.id.as("qnaId"),
-                qna.member.id.as("memberId"),
-                qna.member.name.as("writerName"),
-                qna.title,
-                qna.status,
-                qna.createdDate,
-                qna.modifiedDate
-                )).from(qna)
-                .where(
-                        statusCond(status)
-                )
+        return page(pageable, page -> page.select(
+                        Projections.fields(QnaListResponse.class,
+                                qna.id.as("qnaId"),
+                                qna.memberId.as("memberId"),
+                                member.name.as("writerName"),
+                                qna.title,
+                                qna.status,
+                                qna.createdDate,
+                                qna.modifiedDate
+                        ))
+                .from(qna)
+                .leftJoin(member).on(qna.memberId.eq(member.id))
+                .where(statusCond(status))
                 .orderBy(qna.createdDate.desc()));
     }
 
     @Override
-    public Page<QnaListResponse> findByMemberId(final Integer memberId, Pageable pageable) {
-        return page(pageable, page -> page.select(Projections.fields(QnaListResponse.class,
-                qna.id.as("qnaId"),
-                qna.member.id.as("memberId"),
-                qna.member.name.as("writerName"),
-                qna.title,
-                qna.status,
-                qna.createdDate,
-                qna.modifiedDate
-                )).from(qna)
-                .where(qna.member.id.eq(memberId))
+    public Page<QnaListResponse> findByMemberId(final Long memberId, Pageable pageable) {
+        return page(pageable, page -> page.select(
+                        Projections.fields(QnaListResponse.class,
+                                qna.id.as("qnaId"),
+                                qna.memberId.as("memberId"),
+                                member.name.as("writerName"),
+                                qna.title,
+                                qna.status,
+                                qna.createdDate,
+                                qna.modifiedDate
+                        ))
+                .from(qna)
+                .leftJoin(member).on(member.id.eq(memberId))
+                .where(qna.memberId.eq(memberId))
                 .orderBy(qna.createdDate.desc()));
     }
 

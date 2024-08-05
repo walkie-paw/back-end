@@ -27,6 +27,9 @@ public class Review extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chatroom_id")
     private Chatroom chatroom;
+    private Long chatroomId;
+    private Long revieweeId;
+    private Long reviewerId;
     @Column(name = "review_content")
     private String content;
     @Enumerated(EnumType.STRING)

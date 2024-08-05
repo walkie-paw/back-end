@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 public class QnaUpdateRequest {
-    private Integer memberId;
+    private Long memberId;
     private String title;
     private String content;
     private String reply;

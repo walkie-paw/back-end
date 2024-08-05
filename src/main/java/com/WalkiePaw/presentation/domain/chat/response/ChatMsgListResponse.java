@@ -15,7 +15,7 @@ public class ChatMsgListResponse {
     private final String content;
     private final LocalDateTime createDate;
 
-    public static ChatMsgListResponse from(ChatMessage chatMessage) {
-        return new ChatMsgListResponse(chatMessage.getWriter().getId(), chatMessage.getWriter().getNickname(), chatMessage.getContent(), chatMessage.getCreatedDate());
+    public static ChatMsgListResponse from(ChatMessage chatMessage, String nickname) {
+        return new ChatMsgListResponse(chatMessage.getWriterId(), nickname, chatMessage.getContent(), chatMessage.getCreatedDate());
     }
 }

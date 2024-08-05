@@ -8,14 +8,12 @@ import com.WalkiePaw.global.exception.BadRequestException;
 import com.WalkiePaw.presentation.domain.qna.response.*;
 import com.WalkiePaw.presentation.domain.qna.request.QnaAddRequest;
 import com.WalkiePaw.presentation.domain.qna.request.QnaUpdateRequest;
-import com.WalkiePaw.presentation.domain.qna.request.replyUpdateRequest;
+import com.WalkiePaw.presentation.domain.qna.request.ReplyUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_QNA_ID;
@@ -29,45 +27,52 @@ public class QnaService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public List<QnaListResponse> findAll() {
-        return qnaRepository.findAll().stream()
-                .map(QnaListResponse::from)
-                .toList();
+    public Page<QnaListResponse> findAll(final Pageable pageable) {
+        return qnaRepository.findAll(pageable).map(q -> QnaListResponse.from(q, memberRepository.findById(q.getMemberId())
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID)))
+        );
     }
 
     @Transactional(readOnly = true)
-    public QnaGetResponse findById(final Integer qnaId) {
-        return QnaGetResponse.from(qnaRepository.findById(qnaId).orElseThrow(
+    public QnaGetResponse findById(final Long qnaId) {
+        Qna qna = qnaRepository.findWithMemberById(qnaId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_QNA_ID)
-        ));
-    }
-
-    public Integer save(final QnaAddRequest request) {
-        Member member = memberRepository.findById(request.getMemberId()).orElseThrow(
-                () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
-        return qnaRepository.save(request.toEntity(member)).getId();
+        Member member = memberRepository.findById(qna.getMemberId())
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+        return QnaGetResponse.from(qna, member);
     }
 
-    public void update(final Integer qnaId, final QnaUpdateRequest request) {
+    public Long save(final QnaAddRequest request) {
+        boolean existsById = memberRepository.existsById(request.getMemberId());
+        if (!existsById) {
+            throw new BadRequestException(NOT_FOUND_MEMBER_ID);
+        }
+        return qnaRepository.save(QnaAddRequest.toEntity(request)).getId();
+    }
+
+    public void update(final Long qnaId, final QnaUpdateRequest request) {
         Qna qna = qnaRepository.findById(qnaId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_QNA_ID)
         );
         qna.update(request);
     }
 
-    public void updateReply(final Integer qnaId, final replyUpdateRequest request) {
-        Qna qna = qnaRepository.findById(qnaId).orElseThrow(
-                () -> new BadRequestException(NOT_FOUND_QNA_ID)
-        );
-        qna.updateReply(request);
+    /**
+     * TODO - query 확인하기
+     */
+    public void updateReply(final Long qnaId, final ReplyUpdateRequest request) {
+        qnaRepository.existsById(qnaId);
+        qnaRepository.findById(qnaId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_QNA_ID))
+                .updateReply(request);
     }
 
     public Page<QnaListResponse> findAllByCond(final String status, Pageable pageable) {
         return qnaRepository.findAllByCond(status, pageable);
     }
 
-    public Page<QnaListResponse> findByMemberId(final Integer memberId, Pageable pageable) {
+    public Page<QnaListResponse> findByMemberId(final Long memberId, Pageable pageable) {
         return qnaRepository.findByMemberId(memberId, pageable);
     }
 }
