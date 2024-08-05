@@ -19,29 +19,25 @@ public class BoardReport extends BaseEntity {
     private String content;
     @Enumerated(EnumType.STRING)
     private BoardReportCategory reason;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id")
-    private Board board;
+    private Long memberId;
+    private Long boardId;
     @Enumerated(EnumType.STRING)
     private BoardReportStatus status;
 
     @Builder
-    public BoardReport(String content, Member member, Board board, BoardReportCategory reason) {
+    public BoardReport(String content, Long memberId, Long boardId, BoardReportCategory reason) {
         this.content = content;
-        this.member = member;
-        this.board = board;
+        this.memberId = memberId;
+        this.boardId = boardId;
         this.reason = reason;
         this.status = BoardReportStatus.UNRESOLVED;
     }
 
-    public void update(BoardReportUpdateRequest request, Member member, Board board) {
+    public void update(BoardReportUpdateRequest request, Long memberId, Long boardId) {
         this.reason = request.getReason();
         this.content = request.getContent();
-        this.member = member;
-        this.board = board;
+        this.memberId = memberId;
+        this.boardId = boardId;
     }
 
     public void blind() {

@@ -7,6 +7,6 @@ import lombok.Getter;
 public class BoardReportUpdateRequest {
     private BoardReportCategory reason;
     private String content;
-    private Integer memberId;
-    private Integer boardId;
+    private Long memberId;
+    private Long boardId;
 }

@@ -33,7 +33,7 @@ public class BoardReportService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public BoardReportGetResponse findById(final Integer boardReportId) {
+    public BoardReportGetResponse findById(final Long boardReportId) {
         return BoardReportGetResponse.from(boardReportRepository.findById(boardReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_BOARD_REPORT_ID)
         ));
@@ -46,18 +46,21 @@ public class BoardReportService {
                 .toList();
     }
 
-    public Integer save(final BoardReportAddRequest request) {
-        Member member = memberRepository.findById(request.getMemberId()).orElseThrow(
+    public Long save(final BoardReportAddRequest request) {
+        Member member = memberRepository.findWithBoardById(request.getMemberId()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
         Board board = boardRepository.findById(request.getBoardId()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_BOARD_ID)
         );
-        return boardReportRepository.save(request.toEntity(member, board)).getId();
+        return boardReportRepository.save(BoardReportAddRequest.toEntity(request, member.getId(), board.getId())).getId();
     }
 
-    public void update(final Integer boardReportId, final BoardReportUpdateRequest request) {
-        Member member = memberRepository.findById(request.getMemberId()).orElseThrow(
+    /**
+     * TODO - update 메소드 수정 필요
+     */
+    public void update(final Long boardReportId, final BoardReportUpdateRequest request) {
+        Member member = memberRepository.findWithBoardById(request.getMemberId()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
         Board board = boardRepository.findById(request.getBoardId()).orElseThrow(
@@ -66,21 +69,21 @@ public class BoardReportService {
         BoardReport boardReport = boardReportRepository.findById(boardReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_BOARD_REPORT_ID)
         );
-        boardReport.update(request, member, board);
+        boardReport.update(request, member.getId(), board.getId());
     }
 
-    public void blind(final Integer boardReportId) {
-        BoardReport boardReport = boardReportRepository.findById(boardReportId).orElseThrow(
+    public void blind(final Long boardReportId) {
+        BoardReport boardReport = boardReportRepository.findWithBoardById(boardReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_BOARD_REPORT_ID)
         );
-        Board board = boardRepository.findById(boardReport.getBoard().getId()).orElseThrow(
+        Board board = boardRepository.findById(boardReport.getBoardId()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_BOARD_ID)
         );
         board.delete();
         boardReport.blind();
     }
 
-    public void ignore(final Integer boardReportId) {
+    public void ignore(final Long boardReportId) {
         BoardReport boardReport = boardReportRepository.findById(boardReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_BOARD_REPORT_ID)
         );

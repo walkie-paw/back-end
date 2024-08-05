@@ -28,7 +28,7 @@ public class MemberReportService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public MemberReportGetResponse findById(final Integer memberReportId) {
+    public MemberReportGetResponse findById(final Long memberReportId) {
         return MemberReportGetResponse.from(memberReportRepository.findById(memberReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_REPORT_ID)
         ));
@@ -41,7 +41,7 @@ public class MemberReportService {
                 .toList();
     }
 
-    public Integer save(final MemberReportAddRequest request) {
+    public Long save(final MemberReportAddRequest request) {
         Member reportingMember = memberRepository.findById(request.getReportedMemberId()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
@@ -51,7 +51,7 @@ public class MemberReportService {
         return memberReportRepository.save(request.toEntity(reportingMember, reportedMember)).getId();
     }
 
-    public void update(final Integer memberReportId, final MemberReportUpdateRequest request) {
+    public void update(final Long memberReportId, final MemberReportUpdateRequest request) {
         Member reportingMember = memberRepository.findById(request.getReportingMemberId()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
@@ -64,7 +64,7 @@ public class MemberReportService {
         memberReport.update(request, reportingMember, reportedMember);
     }
 
-    public void ban(final Integer memberReportId) {
+    public void ban(final Long memberReportId) {
         MemberReport memberReport = memberReportRepository.findById(memberReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_REPORT_ID)
         );
@@ -72,7 +72,7 @@ public class MemberReportService {
         memberReport.ban();
     }
 
-    public void ignore(final Integer memberReportId) {
+    public void ignore(final Long memberReportId) {
         MemberReport memberReport = memberReportRepository.findById(memberReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_REPORT_ID)
         );

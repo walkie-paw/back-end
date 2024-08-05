@@ -18,12 +18,12 @@ public class BoardReportAddRequest {
     /**
      * DTO -> Entity
      */
-    public BoardReport toEntity(Member member, Board board) {
+    public static BoardReport toEntity(BoardReportAddRequest request, Long memberId, Long boardId) {
         return BoardReport.builder()
-                .content(this.content)
-                .reason(this.reason)
-                .member(member)
-                .board(board)
+                .content(request.content)
+                .reason(request.reason)
+                .memberId(memberId)
+                .boardId(boardId)
                 .build();
     }
 }
