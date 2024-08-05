@@ -20,7 +20,7 @@ public class ChatWebSocketController {
 
     @MessageMapping("/chats/{chatroomId}")
     @SendTo("/chats/{chatroomId}")
-    public void addChat(@DestinationVariable("chatroomId") Integer chatroomId, @Payload ChatAddRequest request) {
+    public void addChat(@DestinationVariable("chatroomId") Long chatroomId, @Payload ChatAddRequest request) {
         String destination = "/chats/" + chatroomId;
         ChatWebSocketResponse response = new ChatWebSocketResponse(request.getWriterId(), request.getNickname(), request.getContent(), request.getSentTime());
         simpMessagingTemplate.convertAndSend(destination, response);
