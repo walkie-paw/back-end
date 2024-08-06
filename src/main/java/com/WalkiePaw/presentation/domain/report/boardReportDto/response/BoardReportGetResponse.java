@@ -1,5 +1,7 @@
 package com.WalkiePaw.presentation.domain.report.boardReportDto.response;
 
+import com.WalkiePaw.domain.board.entity.Board;
+import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.domain.report.entity.BoardReport;
 import com.WalkiePaw.domain.report.entity.BoardReportCategory;
 import lombok.AllArgsConstructor;
@@ -17,13 +19,13 @@ public class BoardReportGetResponse {
     /**
      * Entity -> DTO
      */
-    public static BoardReportGetResponse from(BoardReport boardReport) {
+    public static BoardReportGetResponse from(BoardReport boardReport, Member writer, Member reporter, Board board) {
         return new BoardReportGetResponse(
                 boardReport.getContent(),
                 boardReport.getReason(),
-                boardReport.getMember().getName(), // reporterName
-                boardReport.getBoard().getMember().getName(), // boardTitle
-                boardReport.getBoard().getTitle() // boardWriterName
+                reporter.getName(), // reporterName
+                board.getTitle(), // boardWriterName
+                writer.getNickname() // boardTitle
         );
     }
 }

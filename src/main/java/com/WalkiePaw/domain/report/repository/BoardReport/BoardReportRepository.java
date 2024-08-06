@@ -13,8 +13,12 @@ import java.util.Optional;
 @Profile("spring-data-jpa")
 public interface BoardReportRepository extends JpaRepository<BoardReport, Long>, BoardReportRepositoryOverride {
 
-    @EntityGraph(attributePaths = {"member", "board"})
-    Optional<BoardReport> findById(final Long boardReportId);
+    @Query("select br from BoardReport br " +
+            "join Board b on br.boardId = b.id " +
+            "join Member m on m.id = br.memberId " +
+            "join Member w on w.id = b.memberId " +
+            "where br.id = :brId")
+    Optional<BoardReport> findWithAllById(@Param("brId") final Long boardReportId);
 
     @EntityGraph(attributePaths = {"member", "board"})
     List<BoardReport> findAll();

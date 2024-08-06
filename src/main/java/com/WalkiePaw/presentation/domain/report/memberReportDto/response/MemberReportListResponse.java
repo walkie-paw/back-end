@@ -1,5 +1,6 @@
 package com.WalkiePaw.presentation.domain.report.memberReportDto.response;
 
+import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.domain.report.entity.MemberReport;
 import com.WalkiePaw.domain.report.entity.MemberReportCategory;
 import lombok.AllArgsConstructor;
@@ -15,7 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 public class MemberReportListResponse {
 
-    private Integer memberReportId;
+    private Long memberReportId;
     private String title;
     private MemberReportCategory reason;
     private String reportingMemberName;
@@ -27,15 +28,15 @@ public class MemberReportListResponse {
     /**
      * Entity를 DTO로 변환하는 메서드
      */
-    public static MemberReportListResponse from(MemberReport memberReport) {
+    public static MemberReportListResponse from(MemberReport memberReport, Member reportingMember, Member reportedMember) {
         return new MemberReportListResponse(
                 memberReport.getId(),
                 memberReport.getTitle(),
                 memberReport.getReason(),
-                memberReport.getReportingMember().getName(), // reportingMemberName
-                memberReport.getReportingMember().getNickname(), // reportingMemberNickname
-                memberReport.getReportedMember().getName(), // reportedMemberName
-                memberReport.getReportedMember().getNickname(), // reportedMemberNickname
+                reportingMember.getName(), // reportingMemberName
+                reportingMember.getNickname(), // reportingMemberNickname
+                reportedMember.getName(), // reportedMemberName
+                reportedMember.getNickname(), // reportedMemberNickname
                 memberReport.getCreatedDate()
         );
     }

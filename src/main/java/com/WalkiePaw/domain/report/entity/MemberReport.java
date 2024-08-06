@@ -38,11 +38,9 @@ public class MemberReport extends BaseEntity {
         this.status = MemberReportStatus.UNRESOLVED;
     }
 
-    public void update(MemberReportUpdateRequest request, Long reportingMemberId, Long reportedMemberId) {
-        this.content = request.getContent();
-        this.reason = request.getReason();
-        this.reportingMemberId = reportingMemberId;
-        this.reportedMemberId = reportedMemberId;
+    public void update(String content, MemberReportCategory reason) {
+        this.content = content;
+        this.reason = reason;
     }
 
     public void ban() {

@@ -31,7 +31,7 @@ public class BoardReportController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BoardReportGetResponse> getBoardReport(final @PathVariable("id") Integer boardReportId) {
+    public ResponseEntity<BoardReportGetResponse> getBoardReport(final @PathVariable("id") Long boardReportId) {
         BoardReportGetResponse response = boardReportService.findById(boardReportId);
         return ResponseEntity.ok()
                 .body(response);
@@ -40,24 +40,24 @@ public class BoardReportController {
     @PostMapping
     public ResponseEntity<Void> addBoardReport(final @Validated @RequestBody BoardReportAddRequest request) {
         System.out.println("request = " + request);
-        Integer boardReportId = boardReportService.save(request);
+        Long boardReportId = boardReportService.save(request);
         return ResponseEntity.created(URI.create(BOARD_REPORT_URL + boardReportId)).build();
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateBoardReport(final @PathVariable("id") Integer boardReportId, final @Validated @RequestBody BoardReportUpdateRequest request) {
+    public ResponseEntity<Void> updateBoardReport(final @PathVariable("id") Long boardReportId, final @Validated @RequestBody BoardReportUpdateRequest request) {
         boardReportService.update(boardReportId, request);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/blind")
-    public ResponseEntity<Void> blindBoardReport(final @PathVariable("id") Integer boardReportId) {
+    public ResponseEntity<Void> blindBoardReport(final @PathVariable("id") Long boardReportId) {
         boardReportService.blind(boardReportId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/ignore")
-    public ResponseEntity<Void> ignoreBoardReport(@PathVariable("id") final Integer boardReportId) {
+    public ResponseEntity<Void> ignoreBoardReport(@PathVariable("id") final Long boardReportId) {
         boardReportService.ignore(boardReportId);
         return ResponseEntity.noContent().build();
     }

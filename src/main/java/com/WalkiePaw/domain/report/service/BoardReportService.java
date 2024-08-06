@@ -34,13 +34,29 @@ public class BoardReportService {
 
     @Transactional(readOnly = true)
     public BoardReportGetResponse findById(final Long boardReportId) {
-        return BoardReportGetResponse.from(boardReportRepository.findById(boardReportId).orElseThrow(
-                () -> new BadRequestException(NOT_FOUND_BOARD_REPORT_ID)
-        ));
+        BoardReport boardReport = boardReportRepository.findWithAllById(boardReportId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_REPORT_ID));
+        Board board = boardRepository.findById(boardReport.getBoardId())
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_ID));
+        Member reporter = memberRepository.findById(boardReport.getMemberId())
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+        Member boardWriter = memberRepository.findById(board.getMemberId())
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+
+        return BoardReportGetResponse.from(boardReport, boardWriter, reporter, board);
     }
 
     @Transactional(readOnly = true)
     public List<BoardReportListResponse> findAll() {
+        BoardReport boardReport = boardReportRepository.findWithAll(boardReportId)
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_REPORT_ID));
+        Board board = boardRepository.findById(boardReport.getBoardId())
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_ID));
+        Member reporter = memberRepository.findById(boardReport.getMemberId())
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+        Member boardWriter = memberRepository.findById(board.getMemberId())
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+
         return boardReportRepository.findAll().stream()
                 .map(BoardReportListResponse::from)
                 .toList();
@@ -92,6 +108,5 @@ public class BoardReportService {
 
     public Page<BoardReportListResponse> findAllByResolvedCond(final String status, Pageable pageable) {
         return boardReportRepository.findAllByResolvedCond(status, pageable);
-
     }
 }

@@ -17,4 +17,6 @@ public interface MemberReportRepository extends JpaRepository<MemberReport, Long
 
     @Query("select mr from MemberReport mr join fetch mr.reportingMember join fetch mr.reportedMember")
     List<MemberReport> findAll();
+
+    MemberReport findWithMemberById(Long memberReportId);
 }

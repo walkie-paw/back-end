@@ -15,7 +15,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.WalkiePaw.global.exception.ExceptionCode.*;
 
@@ -24,6 +28,7 @@ import static com.WalkiePaw.global.exception.ExceptionCode.*;
 @RequiredArgsConstructor
 public class MemberReportService {
 
+    public static final int REQUIRED_MEMBER_COUNT = 2;
     private final MemberReportRepository memberReportRepository;
     private final MemberRepository memberRepository;
 
@@ -42,33 +47,45 @@ public class MemberReportService {
     }
 
     public Long save(final MemberReportAddRequest request) {
-        Member reportingMember = memberRepository.findById(request.getReportedMemberId()).orElseThrow(
-                () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
-        );
-        Member reportedMember = memberRepository.findById(request.getReportedMemberId()).orElseThrow(
-                () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
-        );
-        return memberReportRepository.save(request.toEntity(reportingMember, reportedMember)).getId();
+        Set<Long> idSet = convertIds(request.getReportedMemberId(), request.getReportingMemberId());
+
+        int existsCount = memberRepository.existsByIdIn(idSet);
+        if (existsCount != REQUIRED_MEMBER_COUNT) {
+            throw new BadRequestException(NOT_FOUND_MEMBER_ID);
+        }
+
+        return memberReportRepository.save(
+                MemberReportAddRequest.toEntity(request, request.getReportingMemberId(), request.getReportedMemberId())
+        ).getId();
+    }
+
+    private static Set<Long> convertIds(final Long... ids) {
+        return Arrays.stream(ids).collect(Collectors.toSet());
     }
 
     public void update(final Long memberReportId, final MemberReportUpdateRequest request) {
-        Member reportingMember = memberRepository.findById(request.getReportingMemberId()).orElseThrow(
-                () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
-        );
-        Member reportedMember = memberRepository.findById(request.getReportedMemberId()).orElseThrow(
-                () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
-        );
+        Set<Long> idSet = convertIds(request.getReportedMemberId(), request.getReportingMemberId());
+
+        int existsCount = memberRepository.existsByIdIn(idSet);
+        if (existsCount != REQUIRED_MEMBER_COUNT) {
+            throw new BadRequestException(NOT_FOUND_MEMBER_ID);
+        }
+
         MemberReport memberReport = memberReportRepository.findById(memberReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_REPORT_ID)
         );
-        memberReport.update(request, reportingMember, reportedMember);
+
+        memberReport.update(request.getContent(), request.getReason());
     }
 
     public void ban(final Long memberReportId) {
         MemberReport memberReport = memberReportRepository.findById(memberReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_REPORT_ID)
         );
-        memberReport.getReportedMember().ban();
+        Member member = memberRepository.findById(memberReport.getReportedMemberId())
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+
+        member.ban();
         memberReport.ban();
     }
 
@@ -76,6 +93,7 @@ public class MemberReportService {
         MemberReport memberReport = memberReportRepository.findById(memberReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_REPORT_ID)
         );
+
         memberReport.ignore();
     }
 
