@@ -12,18 +12,18 @@ import lombok.ToString;
 public class BoardReportAddRequest {
     private BoardReportCategory reason;
     private String content;
-    private Integer memberId;
-    private Integer boardId;
+    private Long memberId;
+    private Long boardId;
 
     /**
      * DTO -> Entity
      */
-    public BoardReport toEntity(Member member, Board board) {
+    public static BoardReport toEntity(BoardReportAddRequest request, Long memberId, Long boardId) {
         return BoardReport.builder()
-                .content(this.content)
-                .reason(this.reason)
-                .member(member)
-                .board(board)
+                .content(request.content)
+                .reason(request.reason)
+                .memberId(memberId)
+                .boardId(boardId)
                 .build();
     }
 }

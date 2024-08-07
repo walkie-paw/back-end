@@ -1,18 +1,20 @@
 package com.WalkiePaw.presentation.domain.report.boardReportDto.response;
 
+import com.WalkiePaw.domain.board.entity.Board;
+import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.domain.report.entity.BoardReport;
 import com.WalkiePaw.domain.report.entity.BoardReportCategory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardReportListResponse {
-    private Integer boardReportId;
+    private Long boardReportId;
     private BoardReportCategory reason;
     private String writerName;
     private String boardTitle;
@@ -25,15 +27,15 @@ public class BoardReportListResponse {
      * @param boardReport Entity
      * @return DTO
      */
-    public static BoardReportListResponse from(BoardReport boardReport) {
+    public static BoardReportListResponse from(BoardReport boardReport, Member reporter, Member boardWriter, Board board) {
         return new BoardReportListResponse(
                 boardReport.getId(),
                 boardReport.getReason(),
-                boardReport.getMember().getName(), // writerName
-                boardReport.getBoard().getTitle(), // boardTitle
-                boardReport.getBoard().getMember().getName(), // boardWriterName
-                boardReport.getBoard().getMember().getNickname(), // boardWriterNickname
-                boardReport.getBoard().getMember().getCreatedDate() // boardWriterCreatedDate
+                reporter.getName(), // writerName
+                board.getTitle(), // boardTitle
+                boardWriter.getName(), // boardWriterName
+                boardWriter.getNickname(), // boardWriterNickname
+                boardWriter.getCreatedDate() // boardWriterCreatedDate
         );
     }
 }

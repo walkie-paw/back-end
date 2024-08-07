@@ -17,7 +17,7 @@ public class ChatAddRequest {
     private final String nickname;
     private final LocalDateTime createdDate;
 
-    public ChatMessage toEntity(final ChatAddRequest request, final Member member, final Chatroom chatroom) {
-        return new ChatMessage(chatroom, member, request.content);
+    public ChatMessage toEntity(final ChatAddRequest request, final Long chatroomId) {
+        return new ChatMessage(chatroomId, request.writerId, request.content);
     }
 }

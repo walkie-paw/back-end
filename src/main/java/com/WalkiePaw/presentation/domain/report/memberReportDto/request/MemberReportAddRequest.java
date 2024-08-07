@@ -9,18 +9,18 @@ import lombok.Getter;
 public class MemberReportAddRequest {
     private String content;
     private MemberReportCategory reason;
-    private Integer reportingMemberId;
-    private Integer reportedMemberId;
+    private Long reportingMemberId;
+    private Long reportedMemberId;
 
     /**
      * DTO를 Entity로 변환하는 메서드
      */
-    public MemberReport toEntity(Member reportingMember, Member reportedMember) {
+    public static MemberReport toEntity(MemberReportAddRequest request, Long reportingMemberId, Long reportedMemberId) {
         return MemberReport.builder()
-                .content(this.content)
-                .reason(this.reason)
-                .reportingMember(reportingMember)
-                .reportedMember(reportedMember)
+                .content(request.content)
+                .reason(request.reason)
+                .reportingMemberId(reportingMemberId)
+                .reportedMemberId(reportedMemberId)
                 .build();
 
     }

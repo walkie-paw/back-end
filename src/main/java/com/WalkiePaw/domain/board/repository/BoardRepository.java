@@ -14,8 +14,9 @@ import java.util.Set;
 public interface BoardRepository extends JpaRepository<Board, Long>, BoardRepositoryOverride {
 
     @Query("select b from Board b " +
-            "left join Member m on b.memberId = m.id where b.id = :id " +
-            "left join BoardPhoto bp on b.id = bp.boardId")
+            "left join Member m on b.memberId = m.id " +
+            "left join BoardPhoto bp on b.id = bp.boardId " +
+            "where b.id = :id")
     Optional<Board> getBoardDetail(@Param("id") Long boardId);
 
     Set<Board> findAllByIdIn(Set<Integer> integers);

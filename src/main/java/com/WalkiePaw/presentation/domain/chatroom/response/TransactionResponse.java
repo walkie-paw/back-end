@@ -11,8 +11,7 @@ import java.time.LocalDateTime;
 public class TransactionResponse {
     private Integer chatroomId;
     private String title;
-    private String senderNickname;
-    private String recipientNickname;
+    private String transactionMember;
     private LocalDateTime createdDate;
     private boolean hasReview;  // 추가
     private BoardCategory category;
@@ -21,14 +20,12 @@ public class TransactionResponse {
             final Integer chatroomId,
             final String title,
             final String senderNickname,
-            final String recipientNickname,
             final LocalDateTime createdDate,
             final boolean hasReview,
             final BoardCategory category) {
         this.chatroomId = chatroomId;
         this.title = title;
-        this.senderNickname = senderNickname;
-        this.recipientNickname = recipientNickname;
+        this.transactionMember = transactionMember;
         this.createdDate = createdDate;
         this.hasReview = hasReview;
         this.category = category;

@@ -1,9 +1,8 @@
 package com.WalkiePaw.domain.qna.entity;
 
 import com.WalkiePaw.domain.common.BaseEntity;
-import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.presentation.domain.qna.request.QnaUpdateRequest;
-import com.WalkiePaw.presentation.domain.qna.request.replyUpdateRequest;
+import com.WalkiePaw.presentation.domain.qna.request.ReplyUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -18,9 +17,7 @@ public class Qna extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "qna_id")
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
+    private Long memberId;
     private String title;
     private String content;
     private String reply;
@@ -28,8 +25,8 @@ public class Qna extends BaseEntity {
     private QnaStatus status;
 
     @Builder
-    public Qna(Member member, String title, String content) {
-        this.member = member;
+    public Qna(Long memberId, String title, String content) {
+        this.memberId = memberId;
         this.title = title;
         this.content = content;
         this.status = QnaStatus.WAITING;
@@ -42,7 +39,7 @@ public class Qna extends BaseEntity {
         this.status = request.getStatus();
     }
 
-    public void updateReply(final replyUpdateRequest request) {
+    public void updateReply(final ReplyUpdateRequest request) {
         this.reply = request.getReply();
         this.status = QnaStatus.COMPLETED;
     }

@@ -29,7 +29,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
   public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
       Authentication authentication) throws IOException {
     String email = extractUsername(authentication); // 인증 정보에서 Username(email) 추출
-    Integer memberId = extractMemberId(authentication);
+    Long memberId = extractMemberId(authentication);
     String nickname = extractNickname(authentication);
     String photoUrl = extractPhotoUrl(authentication);
     String role = extractFirstRoleName(authentication);
@@ -66,7 +66,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     return userDetails.getUsername();
   }
 
-  private Integer extractMemberId(Authentication authentication) {
+  private Long extractMemberId(Authentication authentication) {
     UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
     return userPrincipal.getMemberId();
   }

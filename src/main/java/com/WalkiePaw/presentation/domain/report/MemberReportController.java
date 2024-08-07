@@ -24,38 +24,38 @@ public class MemberReportController {
     private static final String MEMBER_REPORT_URL = "/memberReports/";
 
     @GetMapping
-    public ResponseEntity<List<MemberReportListResponse>> getMemberReports() {
-        List<MemberReportListResponse> responses = memberReportService.findAll();
+    public ResponseEntity<Page<MemberReportListResponse>> getMemberReports(final Pageable pageable) {
+        Page<MemberReportListResponse> responses = memberReportService.findAll(pageable);
         return ResponseEntity.ok()
                 .body(responses);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MemberReportGetResponse> getMemberReport(final @PathVariable("id") Integer memberReportId) {
+    public ResponseEntity<MemberReportGetResponse> getMemberReport(final @PathVariable("id") Long memberReportId) {
         MemberReportGetResponse response = memberReportService.findById(memberReportId);
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping
     ResponseEntity<Void> addMemberReport(final @Validated @RequestBody MemberReportAddRequest request) {
-        Integer memberReportId = memberReportService.save(request);
+        Long memberReportId = memberReportService.save(request);
         return ResponseEntity.created(URI.create(MEMBER_REPORT_URL + memberReportId)).build();
     }
 
     @PatchMapping("/{id}")
-    ResponseEntity<Void> updateMemberReport(final @PathVariable("id") Integer memberReportId, final @Validated @RequestBody MemberReportUpdateRequest request) {
+    ResponseEntity<Void> updateMemberReport(final @PathVariable("id") Long memberReportId, final @Validated @RequestBody MemberReportUpdateRequest request) {
         memberReportService.update(memberReportId, request);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/ban")
-    ResponseEntity<Void> banMemberReport(@PathVariable("id") final Integer memberReportId) {
+    ResponseEntity<Void> banMemberReport(@PathVariable("id") final Long memberReportId) {
         memberReportService.ban(memberReportId);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/ignore")
-    ResponseEntity<Void> ignoreMemberReport(@PathVariable("id") final Integer memberReportId) {
+    ResponseEntity<Void> ignoreMemberReport(@PathVariable("id") final Long memberReportId) {
         memberReportService.ignore(memberReportId);
         return ResponseEntity.noContent().build();
     }

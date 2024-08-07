@@ -117,7 +117,7 @@ public class MemberController {
             @RequestParam(required = false) final String name,
             @RequestParam(required = false) final String nickname,
             @RequestParam(required = false) final String email,
-            @RequestParam(required = false) final Long reportedCnt,
+            @RequestParam(required = false) final Integer reportedCnt,
             Pageable pageable
     ) {
         Page<MemberListResponse> list = memberService.findBySearchCond(name, nickname, email, reportedCnt, pageable);

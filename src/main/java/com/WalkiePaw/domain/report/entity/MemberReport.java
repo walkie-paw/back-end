@@ -22,30 +22,25 @@ public class MemberReport extends BaseEntity {
     private String content;
     @Enumerated(EnumType.STRING)
     private MemberReportCategory reason;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reporting_member_id", referencedColumnName = "member_id")
-    private Member reportingMember;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reported_member_id", referencedColumnName = "member_id")
-    private Member reportedMember;
+
+    private Long reportingMemberId;
+    private Long reportedMemberId;
     @Enumerated(EnumType.STRING)
     private MemberReportStatus status;
 
     @Builder
-    public MemberReport(String title, String content, MemberReportCategory reason, Member reportingMember, Member reportedMember) {
+    public MemberReport(String title, String content, MemberReportCategory reason, Long reportingMemberId, Long reportedMemberId) {
         this.title = title;
         this.content = content;
         this.reason = reason;
-        this.reportingMember = reportingMember;
-        this.reportedMember = reportedMember;
+        this.reportingMemberId = reportingMemberId;
+        this.reportedMemberId = reportedMemberId;
         this.status = MemberReportStatus.UNRESOLVED;
     }
 
-    public void update(MemberReportUpdateRequest request, Member reportingMember, Member reportedMember) {
-        this.content = request.getContent();
-        this.reason = request.getReason();
-        this.reportingMember = reportingMember;
-        this.reportedMember = reportedMember;
+    public void update(String content, MemberReportCategory reason) {
+        this.content = content;
+        this.reason = reason;
     }
 
     public void ban() {
