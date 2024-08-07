@@ -13,7 +13,7 @@ import java.util.Collection;
 @ToString
 public class UserPrincipal implements UserDetails {
 
-  private final Integer memberId;
+  private final Long memberId;
   private final String email;
   private final String nickname;
   private final String photoUrl;

@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ProfileResponse {
-    private Integer memberId;
+    private Long memberId;
     private String nickname;
     private String profile;
     private String member_photo;

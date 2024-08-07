@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,8 +25,8 @@ public class BoardReportController {
     private static final String BOARD_REPORT_URL = "/boardReports/";
 
     @GetMapping
-    public ResponseEntity<List<BoardReportListResponse>> boardReportList() {
-        List<BoardReportListResponse> responses = boardReportService.findAll();
+    public ResponseEntity<Page<BoardReportListResponse>> boardReportList(Pageable pageable) {
+        Page<BoardReportListResponse> responses = boardReportService.findAll(pageable);
         return ResponseEntity.ok()
                 .body(responses);
     }

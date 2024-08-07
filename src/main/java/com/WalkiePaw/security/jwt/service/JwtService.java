@@ -52,7 +52,7 @@ public class JwtService {
   /**
    * AccessToken 생성 메소드
    */
-  public String createAccessToken(String email, Integer memberId, String nickname, String photoUrl, String role) {
+  public String createAccessToken(String email, Long memberId, String nickname, String photoUrl, String role) {
     Date now = new Date();
     log.info("nickname = {}", nickname);
     return JWT.create() // JWT 토큰을 생성하는 빌더 반환

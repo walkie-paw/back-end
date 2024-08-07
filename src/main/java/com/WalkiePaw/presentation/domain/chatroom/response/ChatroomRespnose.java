@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class ChatroomRespnose {
-    private final Integer chatroomId;
+    private final Long chatroomId;
     public static ChatroomRespnose toEntity(final Chatroom chatroom) {
         return new ChatroomRespnose(chatroom.getId());
     }

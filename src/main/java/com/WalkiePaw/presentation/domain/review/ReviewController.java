@@ -28,7 +28,7 @@ public class ReviewController {
     @GetMapping("/{id}/reviewee")
     public ResponseEntity<Slice<ReviewListResponse>> getReviewsByRevieweeId(
             Pageable pageable,
-            @PathVariable("id") final Integer revieweeId,
+            @PathVariable("id") final Long revieweeId,
             @RequestParam("category") BoardCategory category
     ) {
         Slice<ReviewListResponse> reviews = reviewService.findByRevieweeId(pageable, revieweeId, category);
@@ -38,7 +38,7 @@ public class ReviewController {
     @GetMapping("/{id}/reviewer")
     public ResponseEntity<Slice<ReviewListResponse>> getReviewsByReviewerId(
             Pageable pageable,
-            @PathVariable("id") final Integer reviewerId,
+            @PathVariable("id") final Long reviewerId,
             @RequestParam("category") BoardCategory category
     ) {
         Slice<ReviewListResponse> reviews = reviewService.findByReviewerId(pageable, reviewerId, category);
@@ -47,18 +47,18 @@ public class ReviewController {
 
     @PostMapping
     public ResponseEntity<Void> saveReview(final @RequestBody ReviewSaveRequest request) {
-        Integer id = reviewService.addReview(request);
+        Long id = reviewService.addReview(request);
         return ResponseEntity.created(URI.create(REVIEWS_URI + id)).build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReviewDetailResponse> getReview(final @PathVariable Integer id) {
+    public ResponseEntity<ReviewDetailResponse> getReview(final @PathVariable Long id) {
         ReviewDetailResponse response = reviewService.findById(id);
         return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateReview(final @PathVariable Integer id, final @RequestBody ReviewUpdateRequest request) {
+    public ResponseEntity<Void> updateReview(final @PathVariable Long id, final @RequestBody ReviewUpdateRequest request) {
         reviewService.updateReview(id, request);
         return ResponseEntity.noContent().build();
     }

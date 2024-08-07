@@ -16,12 +16,12 @@ public class ReviewSaveRequest {
     private final Long reviewerId;
     private final BoardCategory category;
 
-    public static Review toEntity(final ReviewSaveRequest request, Chatroom chatroom, Member reviewee, Member reviewer) {
+    public static Review toEntity(final ReviewSaveRequest request, Long chatroomId, Long revieweeId, Long reviewerId) {
         return Review.builder()
             .point(request.point)
-            .chatroom(chatroom)
-            .reviewee(reviewee)
-            .reviewer(reviewer)
+            .chatroomId(chatroomId)
+            .revieweeId(revieweeId)
+            .reviewerId(reviewerId)
             .content(request.content)
             .category(request.category)
             .build();

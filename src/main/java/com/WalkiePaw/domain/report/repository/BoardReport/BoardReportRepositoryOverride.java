@@ -7,4 +7,6 @@ import org.springframework.data.domain.Pageable;
 public interface BoardReportRepositoryOverride {
 
     Page<BoardReportListResponse> findAllByResolvedCond(String status, Pageable pageable);
+
+    Page<BoardReportListResponse> findAllWithRelations(Pageable pageable);
 }

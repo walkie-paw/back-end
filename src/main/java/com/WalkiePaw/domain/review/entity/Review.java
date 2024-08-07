@@ -18,18 +18,9 @@ public class Review extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reviewee_member_id", referencedColumnName = "member_id")
-    private Member reviewee;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reviewer_member_id", referencedColumnName = "member_id")
-    private Member reviewer;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chatroom_id")
-    private Chatroom chatroom;
-    private Long chatroomId;
     private Long revieweeId;
     private Long reviewerId;
+    private Long chatroomId;
     @Column(name = "review_content")
     private String content;
     @Enumerated(EnumType.STRING)
@@ -38,13 +29,13 @@ public class Review extends BaseEntity {
     private boolean isDeleted;
 
     @Builder
-    public Review(int point, String content, Chatroom chatroom, Member reviewee, Member reviewer, BoardCategory category) {
+    public Review(int point, String content, Long chatroomId, Long revieweeId, Long reviewerId, BoardCategory category) {
         this.category = category;
         this.point = point;
         this.content = content;
-        this.chatroom = chatroom;
-        this.reviewee = reviewee;
-        this.reviewer = reviewer;
+        this.chatroomId = chatroomId;
+        this.revieweeId = revieweeId;
+        this.reviewerId = reviewerId;
     }
 
     /**

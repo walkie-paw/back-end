@@ -7,6 +7,8 @@ import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.domain.review.entity.Review;
 import com.WalkiePaw.domain.review.repository.ReviewRepository;
+import com.WalkiePaw.global.exception.BadRequestException;
+import com.WalkiePaw.global.exception.ExceptionCode;
 import com.WalkiePaw.presentation.domain.review.response.ReviewDetailResponse;
 import com.WalkiePaw.presentation.domain.review.response.ReviewListResponse;
 import com.WalkiePaw.presentation.domain.review.request.ReviewSaveRequest;
@@ -21,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,48 +36,46 @@ public class ReviewService {
 
 
     @Transactional
-    public Integer addReview(final ReviewSaveRequest request) {
-        Chatroom chatroom = chatroomRepository.findById(request.getChatroomId())
+    public Long addReview(final ReviewSaveRequest request) {
+        Chatroom chatroom = chatroomRepository.findWithMemberById(request.getChatroomId(), request.getReviewerId())
                 .orElseThrow(() -> new IllegalStateException("잘못된 채팅방 번호입니다."));
         Member reviewer = memberRepository.findById(request.getReviewerId())
                 .orElseThrow(() -> new IllegalStateException("잘못된 회원 번호입니다."));
+
         Review review = null;
-        if (chatroom.getBoard().getMember().getId() == reviewer.getId()) {
-            review = ReviewSaveRequest.toEntity(request, chatroom,
-                memberRepository.findById(chatroom.getMember().getId()).orElseThrow(),
-                reviewer);
+        if (chatroom.getSenderId().equals(reviewer.getId())) {
+            Member chatroomSender = memberRepository.findById(chatroom.getSenderId())
+                    .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+
+            review = ReviewSaveRequest.toEntity(request, chatroom.getId(), chatroomSender.getId(), reviewer.getId());
         } else {
-            review = ReviewSaveRequest.toEntity(request, chatroom,
-                memberRepository.findById(chatroom.getBoard().getMember().getId()).orElseThrow(),
-                reviewer);
+            Member chatroomRecipient = memberRepository.findById(chatroom.getRecipientId())
+                    .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
+
+            review = ReviewSaveRequest.toEntity(request, chatroom.getId(), chatroomRecipient.getId(), reviewer.getId());
         }
+
         return reviewRepository.save(review).getId();
     }
 
-    public ReviewDetailResponse findById(final Integer reviewId) {
+    public ReviewDetailResponse findById(final Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalStateException("잘못된 리뷰 번호입니다."));
         return ReviewDetailResponse.from(review);
     }
 
     @Transactional
-    public void updateReview(final Integer reviewId, final ReviewUpdateRequest request) {
+    public void updateReview(final Long reviewId, final ReviewUpdateRequest request) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalStateException("잘못된 리뷰 번호입니다."));
         review.update(request.getContent(), request.getPoint());
     }
 
-    public Slice<ReviewListResponse> findByReviewerId(Pageable pageable, final Integer reviewerId, final BoardCategory category) {
-        List<Review> reviews = reviewRepository.findByReviewerIdAndCategory(pageable, reviewerId, category);
-        return new SliceImpl<>(reviews.stream()
-                .map(ReviewListResponse::from)
-                .toList());
+    public Slice<ReviewListResponse> findByReviewerId(Pageable pageable, final Long reviewerId, final BoardCategory category) {
+        return reviewRepository.findByReviewerIdAndCategory(pageable, reviewerId, category);
     }
 
-    public Slice<ReviewListResponse> findByRevieweeId(Pageable pageable, final Integer revieweeId, final BoardCategory category) {
-        List<Review> reviews = reviewRepository.findByRevieweeIdAndCategory(pageable, revieweeId, category);
-        return new SliceImpl<>(reviews.stream()
-                .map(ReviewListResponse::from)
-                .toList());
+    public Slice<ReviewListResponse> findByRevieweeId(Pageable pageable, final Long revieweeId, final BoardCategory category) {
+        return reviewRepository.findByRevieweeIdAndCategory(pageable, revieweeId, category);
     }
 }

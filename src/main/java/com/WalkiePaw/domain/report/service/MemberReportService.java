@@ -34,16 +34,16 @@ public class MemberReportService {
 
     @Transactional(readOnly = true)
     public MemberReportGetResponse findById(final Long memberReportId) {
-        return MemberReportGetResponse.from(memberReportRepository.findById(memberReportId).orElseThrow(
-                () -> new BadRequestException(NOT_FOUND_MEMBER_REPORT_ID)
-        ));
+        boolean exists = memberReportRepository.existsById(memberReportId);
+        if (!exists) {
+            throw new BadRequestException(NOT_FOUND_MEMBER_REPORT_ID);
+        }
+        return memberReportRepository.findWithRelationsById(memberReportId);
     }
 
     @Transactional(readOnly = true)
-    public List<MemberReportListResponse> findAll() {
-        return memberReportRepository.findAll().stream()
-                .map(MemberReportListResponse::from)
-                .toList();
+    public Page<MemberReportListResponse> findAll(final Pageable pageable) {
+        return memberReportRepository.findAllWithRelations(pageable);
     }
 
     public Long save(final MemberReportAddRequest request) {
@@ -93,7 +93,6 @@ public class MemberReportService {
         MemberReport memberReport = memberReportRepository.findById(memberReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_REPORT_ID)
         );
-
         memberReport.ignore();
     }
 

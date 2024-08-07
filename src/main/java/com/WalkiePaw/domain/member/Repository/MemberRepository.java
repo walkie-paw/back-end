@@ -30,9 +30,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
     @Query("select m from Member m join Board b on b.memberId = m.id where m.id = :id")
     Optional<Member> findWithBoardById(@Param("id") final Long memberId);
 
-    @Query("select count(*) from Member m where m.id in ")
-    Set<Member> findByIds(Long reportedMemberId, Long reportingMemberId);
-
     @Query("select count(*) from Member m where m.id in :ids")
     int existsByIdIn(@Param("ids") Set<Long> idSet);
 }

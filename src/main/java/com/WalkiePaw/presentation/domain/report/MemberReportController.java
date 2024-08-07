@@ -24,8 +24,8 @@ public class MemberReportController {
     private static final String MEMBER_REPORT_URL = "/memberReports/";
 
     @GetMapping
-    public ResponseEntity<List<MemberReportListResponse>> getMemberReports() {
-        List<MemberReportListResponse> responses = memberReportService.findAll();
+    public ResponseEntity<Page<MemberReportListResponse>> getMemberReports(final Pageable pageable) {
+        Page<MemberReportListResponse> responses = memberReportService.findAll(pageable);
         return ResponseEntity.ok()
                 .body(responses);
     }
