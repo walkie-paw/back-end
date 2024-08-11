@@ -31,13 +31,13 @@ public class BoardLikeController {
      */
     @PostMapping
     public ResponseEntity<Void> addBoardLike(final @RequestBody BoardLikeRequest request) {
-        Long id = boardLikeService.saveBoardLike(request);
+        Long id = boardLikeService.saveBoardLike(request.getBoardId(), request.getLoginUserId());
         return ResponseEntity.created(URI.create(BOARDS_LIKE + id)).build();
     }
 
     @DeleteMapping
     public ResponseEntity<Void> cancelBoardLike(final @RequestBody BoardLikeRequest request) {
-        boardLikeService.cancelBoardLike(request);
+        boardLikeService.cancelBoardLike(request.getBoardId(), request.getLoginUserId());
         return ResponseEntity.noContent().build();
     }
 }

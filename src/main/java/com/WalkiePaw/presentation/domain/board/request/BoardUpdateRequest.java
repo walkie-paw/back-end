@@ -13,7 +13,6 @@ public class BoardUpdateRequest {
     private final String title;
     private final String content;
     private final int price;
-    private final LocalDateTime meetingTime;
     private final PriceType priceType;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;

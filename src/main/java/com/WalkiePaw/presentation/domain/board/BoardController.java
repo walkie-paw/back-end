@@ -3,10 +3,14 @@ package com.WalkiePaw.presentation.domain.board;
 import com.WalkiePaw.domain.board.entity.BoardCategory;
 import com.WalkiePaw.domain.board.service.BoardService;
 import com.WalkiePaw.global.aspect.annotation.Trace;
-import com.WalkiePaw.presentation.domain.board.response.*;
+import com.WalkiePaw.presentation.domain.board.dto.BoardAddParam;
+import com.WalkiePaw.presentation.domain.board.dto.BoardUpdateParam;
 import com.WalkiePaw.presentation.domain.board.request.BoardAddRequest;
 import com.WalkiePaw.presentation.domain.board.request.BoardStatusUpdateRequest;
 import com.WalkiePaw.presentation.domain.board.request.BoardUpdateRequest;
+import com.WalkiePaw.presentation.domain.board.response.BoardGetResponse;
+import com.WalkiePaw.presentation.domain.board.response.BoardListResponse;
+import com.WalkiePaw.presentation.domain.board.response.BoardMypageListResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,25 +54,28 @@ public class BoardController {
 
     @PostMapping
     public ResponseEntity<Void> addBoard(final @Valid @RequestBody BoardAddRequest request) {
-        Long saveId = boardService.save(request);
+        BoardAddParam boardAddParam = new BoardAddParam(request);
+
+        Long saveId = boardService.save(boardAddParam, request.getMemberId());
         return ResponseEntity.created(URI.create(BOARD_URL + saveId)).build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BoardGetResponse> getBoard(final @PathVariable("id") Long boardId) {
-        BoardGetResponse board = boardService.getBoard(boardId);
-        return ResponseEntity.ok(board);
+        BoardGetResponse response = boardService.getBoard(boardId);
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateBoard(final @PathVariable("id") Long boardId, final @RequestBody BoardUpdateRequest request) {
-        boardService.updateBoard(boardId, request);
+        BoardUpdateParam param = new BoardUpdateParam(request);
+        boardService.updateBoard(boardId, param);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/status/{id}")
+    @PatchMapping("/status")
     public ResponseEntity<Void> updateBoardStatus(final @RequestBody BoardStatusUpdateRequest request) {
-        boardService.updateBoardStatus(request);
+        boardService.updateBoardStatus(request.getBoardId(), request.getStatus());
         return ResponseEntity.noContent().build();
     }
 
