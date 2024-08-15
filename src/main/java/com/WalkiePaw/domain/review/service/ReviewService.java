@@ -8,20 +8,15 @@ import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.domain.review.entity.Review;
 import com.WalkiePaw.domain.review.repository.ReviewRepository;
 import com.WalkiePaw.global.exception.BadRequestException;
-import com.WalkiePaw.global.exception.ExceptionCode;
-import com.WalkiePaw.presentation.domain.review.response.ReviewDetailResponse;
-import com.WalkiePaw.presentation.domain.review.response.ReviewListResponse;
-import com.WalkiePaw.presentation.domain.review.request.ReviewSaveRequest;
-import com.WalkiePaw.presentation.domain.review.request.ReviewUpdateRequest;
+import com.WalkiePaw.presentation.domain.review.dto.ReviewSaveParam;
+import com.WalkiePaw.presentation.domain.review.dto.response.ReviewDetailResponse;
+import com.WalkiePaw.presentation.domain.review.dto.response.ReviewListResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 
@@ -36,10 +31,10 @@ public class ReviewService {
 
 
     @Transactional
-    public Long addReview(final ReviewSaveRequest request) {
-        Chatroom chatroom = chatroomRepository.findWithMemberById(request.getChatroomId(), request.getReviewerId())
+    public Long addReview(final ReviewSaveParam param) {
+        Chatroom chatroom = chatroomRepository.findWithMemberById(param.getChatroomId(), param.getReviewerId())
                 .orElseThrow(() -> new IllegalStateException("잘못된 채팅방 번호입니다."));
-        Member reviewer = memberRepository.findById(request.getReviewerId())
+        Member reviewer = memberRepository.findById(param.getReviewerId())
                 .orElseThrow(() -> new IllegalStateException("잘못된 회원 번호입니다."));
 
         Review review = null;
@@ -47,12 +42,12 @@ public class ReviewService {
             Member chatroomSender = memberRepository.findById(chatroom.getSenderId())
                     .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
 
-            review = ReviewSaveRequest.toEntity(request, chatroom.getId(), chatroomSender.getId(), reviewer.getId());
+            review = ReviewSaveParam.toEntity(param, chatroom.getId(), chatroomSender.getId(), reviewer.getId());
         } else {
             Member chatroomRecipient = memberRepository.findById(chatroom.getRecipientId())
                     .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
 
-            review = ReviewSaveRequest.toEntity(request, chatroom.getId(), chatroomRecipient.getId(), reviewer.getId());
+            review = ReviewSaveParam.toEntity(param, chatroom.getId(), chatroomRecipient.getId(), reviewer.getId());
         }
 
         return reviewRepository.save(review).getId();
@@ -65,10 +60,10 @@ public class ReviewService {
     }
 
     @Transactional
-    public void updateReview(final Long reviewId, final ReviewUpdateRequest request) {
+    public void updateReview(final Long reviewId, final String content, final int point) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalStateException("잘못된 리뷰 번호입니다."));
-        review.update(request.getContent(), request.getPoint());
+        review.update(content, point);
     }
 
     public Slice<ReviewListResponse> findByReviewerId(Pageable pageable, final Long reviewerId, final BoardCategory category) {

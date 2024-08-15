@@ -1,19 +1,13 @@
 package com.WalkiePaw.domain.board.entity;
 
 import com.WalkiePaw.domain.common.BaseEntity;
-import com.WalkiePaw.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -33,8 +27,8 @@ public class Board extends BaseEntity {
     private PriceType priceType;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private int viewCount;
-    private int likeCount;
+    private long viewCount;
+    private long likeCount;
     private String location;
     private String detailedLocation;
     @Enumerated(EnumType.STRING)
@@ -76,7 +70,6 @@ public class Board extends BaseEntity {
                        final LocalDateTime endTime, final PriceType priceType,
                        final String location, final String detailedLocation,
                        final boolean priceProposal) {
-
         this.title = title;
         this.content = content;
         this.price = price;
@@ -98,7 +91,7 @@ public class Board extends BaseEntity {
         this.status = status;
     }
 
-    public void updateBoardLike(final int likeCount) {
+    public void updateBoardLike(final long likeCount) {
         this.likeCount = likeCount;
     }
 

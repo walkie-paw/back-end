@@ -21,6 +21,7 @@ public class UploadService {
     private final String secretKey;
     private final String bucketName;
     private final String region;
+
     public UploadService(
             @Value("${cloud.aws.credentials.accessKey}") String accessKey,
             @Value("${cloud.aws.credentials.secretKey}") String secretKey,

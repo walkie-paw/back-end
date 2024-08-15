@@ -8,10 +8,10 @@ import com.WalkiePaw.domain.chatroom.entity.ChatroomStatus;
 import com.WalkiePaw.domain.chatroom.repository.ChatroomRepository;
 import com.WalkiePaw.global.exception.BadRequestException;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
-import com.WalkiePaw.presentation.domain.chatroom.request.ChatroomAddRequest;
-import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomListResponse;
-import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomRespnose;
-import com.WalkiePaw.presentation.domain.chatroom.response.TransactionResponse;
+import com.WalkiePaw.presentation.domain.chatroom.dto.ChatroomAddParam;
+import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomListResponse;
+import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomRespnose;
+import com.WalkiePaw.presentation.domain.chatroom.dto.response.TransactionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,23 +36,23 @@ public class ChatroomService {
     }
 
     @Transactional
-    public Long saveChatroom(final ChatroomAddRequest request) {
-        existsBoard(request);
-        existsMember(request);
-        Chatroom chatroom = ChatroomAddRequest.toEntity(request.getBoardId(), request.getSenderId(), request.getRecipientId());
+    public Long saveChatroom(final ChatroomAddParam param) {
+        existsBoard(param);
+        existsMember(param);
+        Chatroom chatroom = ChatroomAddParam.toEntity(param.getBoardId(), param.getSenderId(), param.getRecipientId());
         return chatroomRepository.save(chatroom).getId();
     }
 
-    private void existsMember(ChatroomAddRequest request) {
-        boolean existsRecipient = memberRepository.existsById(request.getRecipientId());
-        boolean existsSender = memberRepository.existsById(request.getSenderId());
+    private void existsMember(final ChatroomAddParam param) {
+        boolean existsRecipient = memberRepository.existsById(param.getRecipientId());
+        boolean existsSender = memberRepository.existsById(param.getSenderId());
         if (!existsSender || !existsRecipient) {
             throw new BadRequestException(NOT_FOUND_MEMBER_ID);
         }
     }
 
-    private void existsBoard(ChatroomAddRequest request) {
-        boolean existsBoard = boardRepository.existsById(request.getBoardId());
+    private void existsBoard(final ChatroomAddParam param) {
+        boolean existsBoard = boardRepository.existsById(param.getBoardId());
         if (!existsBoard) {
             throw new BadRequestException(NOT_FOUND_BOARD_ID);
         }

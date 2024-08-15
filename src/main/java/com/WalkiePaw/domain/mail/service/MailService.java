@@ -3,7 +3,7 @@ package com.WalkiePaw.domain.mail.service;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.global.exception.BadRequestException;
-import com.WalkiePaw.presentation.domain.mail.response.EmailAuthResponse;
+import com.WalkiePaw.presentation.domain.mail.dto.response.EmailAuthResponse;
 import com.WalkiePaw.utils.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;

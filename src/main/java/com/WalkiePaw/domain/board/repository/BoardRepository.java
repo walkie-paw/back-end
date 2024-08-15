@@ -19,9 +19,9 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardReposi
             "where b.id = :id")
     Optional<Board> getBoardDetail(@Param("id") Long boardId);
 
-    Set<Board> findAllByIdIn(Set<Integer> integers);
+    Set<Board> findAllByIdIn(Set<Long> integers);
 
     @Modifying(clearAutomatically = true)
     @Query("UPDATE Board b SET b.likeCount = :likeCount WHERE b.id = :id")
-    int updateLikeCountById(@Param("likeCount") Integer likes, @Param("id") Integer id);
+    int updateLikeCountById(@Param("likeCount") Integer likes, @Param("id") Long id);
 }

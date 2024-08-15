@@ -1,8 +1,8 @@
 package com.WalkiePaw.domain.qna.entity;
 
 import com.WalkiePaw.domain.common.BaseEntity;
-import com.WalkiePaw.presentation.domain.qna.request.QnaUpdateRequest;
-import com.WalkiePaw.presentation.domain.qna.request.ReplyUpdateRequest;
+import com.WalkiePaw.presentation.domain.qna.dto.request.QnaUpdateRequest;
+import com.WalkiePaw.presentation.domain.qna.dto.request.ReplyUpdateRequest;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -32,15 +32,15 @@ public class Qna extends BaseEntity {
         this.status = QnaStatus.WAITING;
     }
 
-    public void update(QnaUpdateRequest request) {
-        this.title = request.getTitle();
-        this.content = request.getContent();
-        this.reply = request.getReply();
-        this.status = request.getStatus();
+    public void update(final String title, final String content, final String reply, final QnaStatus status) {
+        this.title = title;
+        this.content = content;
+        this.reply = reply;
+        this.status = status;
     }
 
-    public void updateReply(final ReplyUpdateRequest request) {
-        this.reply = request.getReply();
+    public void updateReply(final String reply) {
+        this.reply = reply;
         this.status = QnaStatus.COMPLETED;
     }
 

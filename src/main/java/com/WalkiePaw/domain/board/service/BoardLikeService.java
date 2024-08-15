@@ -5,9 +5,8 @@ import com.WalkiePaw.domain.board.entity.BoardLike;
 import com.WalkiePaw.domain.board.repository.BoardLikeRepository;
 import com.WalkiePaw.domain.board.repository.BoardRepository;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
-import com.WalkiePaw.domain.member.entity.Member;
-import com.WalkiePaw.presentation.domain.board.request.BoardLikeRequest;
-import com.WalkiePaw.presentation.domain.board.response.BoardListResponse;
+import com.WalkiePaw.global.exception.BadRequestException;
+import com.WalkiePaw.presentation.domain.board.dto.response.BoardListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -19,6 +18,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_BOARD_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -36,29 +37,39 @@ public class BoardLikeService {
         return boardRepository.findLikeBoardList(memberId, pageable);
     }
 
-    public Long saveBoardLike(final BoardLikeRequest request) {
-        Board board = boardRepository.findById(request.getBoardId()).orElseThrow();
-        Member member = memberRepository.findById(request.getLoginUserId()).orElseThrow();
-        BoardLike boardLike = new BoardLike(member.getId(), board.getId());
+    public Long saveBoardLike(final Long boardId, final Long loginUserId) {
+        boolean existsBoard = boardRepository.existsById(boardId);
+        if (!existsBoard) {
+            throw new BadRequestException(NOT_FOUND_BOARD_ID);
+        }
+
+        boolean existsMember = memberRepository.existsById(loginUserId);
+        if (!existsMember) {
+            throw new BadRequestException(NOT_FOUND_BOARD_ID);
+        }
+
+        BoardLike boardLike = new BoardLike(boardId, loginUserId);
+
         return boardLikeRepository.save(boardLike).getId();
     }
 
-    public void cancelBoardLike(final BoardLikeRequest request) {
-        BoardLike boardLike = boardLikeRepository.findByMemberIdAndBoardId(request.getLoginUserId(), request.getBoardId());
+    public void cancelBoardLike(final Long boardId, final Long loginUserId) {
+        BoardLike boardLike = boardLikeRepository.findByMemberIdAndBoardId(loginUserId, boardId);
         boardLikeRepository.delete(boardLike);
     }
 
     @Scheduled(fixedDelay = 600000)
     public void countBoardLike() {
-        Map<Integer, Integer> counts = boardLikeRepository.countAllBoardLike().stream()
+        Map<Long, Long> counts = boardLikeRepository.countAllBoardLike().stream()
                 .collect(Collectors.toMap(
                         c -> c[BOARD_ID_INDEX],
                         c -> c[LIKE_COUNT]
                 ));
-        Set<Integer> batchBoardId = new HashSet<>();
+
+        Set<Long> batchBoardId = new HashSet<>();
         Set<Board> boards = new HashSet<>();
 
-        for (Integer boardId : counts.keySet()) {
+        for (Long boardId : counts.keySet()) {
             batchBoardId.add(boardId);
             if (batchBoardId.size() == BATCH_SIZE) {
                 boards.addAll(boardRepository.findAllByIdIn(batchBoardId));

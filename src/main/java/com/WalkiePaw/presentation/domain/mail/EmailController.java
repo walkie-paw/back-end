@@ -1,9 +1,9 @@
 package com.WalkiePaw.presentation.domain.mail;
 
 import com.WalkiePaw.domain.mail.service.MailService;
-import com.WalkiePaw.presentation.domain.mail.request.EmailAuthRequest;
-import com.WalkiePaw.presentation.domain.mail.response.EmailAuthResponse;
-import com.WalkiePaw.presentation.domain.mail.request.EmailSendRequest;
+import com.WalkiePaw.presentation.domain.mail.dto.request.EmailAuthRequest;
+import com.WalkiePaw.presentation.domain.mail.dto.response.EmailAuthResponse;
+import com.WalkiePaw.presentation.domain.mail.dto.request.EmailSendRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

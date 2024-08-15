@@ -1,8 +1,11 @@
 package com.WalkiePaw.presentation.domain.member;
 
 import com.WalkiePaw.domain.member.service.MemberService;
-import com.WalkiePaw.presentation.domain.member.response.*;
-import com.WalkiePaw.presentation.domain.member.request.*;
+import com.WalkiePaw.presentation.domain.member.dto.MemberUpdateParam;
+import com.WalkiePaw.presentation.domain.member.dto.MemberAddParam;
+import com.WalkiePaw.presentation.domain.member.dto.SocialSignUpParam;
+import com.WalkiePaw.presentation.domain.member.dto.request.*;
+import com.WalkiePaw.presentation.domain.member.dto.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -45,14 +48,16 @@ public class MemberController {
     @Operation(summary = "멤버 추가")
     @PostMapping
     public ResponseEntity<Void> addMember(final @Validated @RequestBody MemberAddRequest request) {
-        Long memberId = memberService.save(request);
+        var param = new MemberAddParam(request);
+        Long memberId = memberService.save(param);
         return ResponseEntity.created(URI.create(MEMBER_URL + memberId)).build();
     }
 
     @Operation(summary = "소셜로그인 회원가입")
     @PostMapping("/social-signup")
     public ResponseEntity<Void> socialSignUp(final @Validated @RequestBody SocialSignUpRequest request) {
-        Long memberId = memberService.socialSignUp(request);
+        var param = new SocialSignUpParam(request);
+        Long memberId = memberService.socialSignUp(param);
         return ResponseEntity.created(URI.create(MEMBER_URL + memberId)).build();
     }
 
@@ -60,7 +65,8 @@ public class MemberController {
     @Operation(summary = "멤버 수정")
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateMember(final @PathVariable("id") Long memberId, final @RequestBody MemberUpdateRequest request) {
-        memberService.update(memberId, request);
+        var param = new MemberUpdateParam(request);
+        memberService.update(memberId, param);
         return ResponseEntity.noContent().build();
     }
 
@@ -79,14 +85,14 @@ public class MemberController {
     @Operation(summary = "비밀번호 찾기 - 멤버 비밀번호 수정")
     @PatchMapping("/{id}/passwordUpdate")
     public ResponseEntity<Void> updateMemberPasswd(@PathVariable("id") final Long memberId, @RequestBody final MemberPasswdUpdateRequest request) {
-        memberService.updatePasswd(memberId, request);
+        memberService.updatePasswd(memberId, request.password());
         return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "마이페이지 - 멤버 비밀번호 수정")
     @PatchMapping("/mypage/{id}/password-update")
     public ResponseEntity<Void> mypageUpdateMemberPasswd(@PathVariable("id") final Long memberId, @RequestBody final MemberPasswdUpdateRequest request) {
-        memberService.updatePasswd(memberId, request);
+        memberService.updatePasswd(memberId, request.password());
         return ResponseEntity.noContent().build();
     }
 
@@ -143,13 +149,13 @@ public class MemberController {
     @Operation(summary = "이메일 찾기")
     @PostMapping("/find-email")
     public ResponseEntity<FindEmailResponse> findEmail(@RequestBody final FindEmailRequest request) {
-        return ResponseEntity.ok(memberService.findEmail(request));
+        return ResponseEntity.ok(memberService.findEmail(request.name(), request.phoneNumber()));
     }
 
     @Operation(summary = "비밀번호 찾기")
     @PostMapping("/find-passwd")
     public ResponseEntity<FindPasswdResponse> findPasswd(@RequestBody final FindPasswdRequest request) {
-        return ResponseEntity.ok(memberService.findPasswd(request));
+        return ResponseEntity.ok(memberService.findPasswd(request.name(), request.email()));
     }
 
     @Operation(summary = "프로파일")
@@ -162,7 +168,7 @@ public class MemberController {
     @PatchMapping("/{id}/selected-addresses")
     public ResponseEntity<Void> updateSelectedAddresses(
         @PathVariable("id") final Long memberId, @RequestBody final UpdateSelectedAddrRequest request ) {
-        memberService.updateSeletedAddr(memberId, request);
+        memberService.updateSeletedAddr(memberId, request.selectedAddresses());
         return ResponseEntity.ok().build();
     }
 

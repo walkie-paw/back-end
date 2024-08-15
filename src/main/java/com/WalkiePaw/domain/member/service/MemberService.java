@@ -4,8 +4,11 @@ import com.WalkiePaw.domain.mail.service.MailService;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.global.exception.BadRequestException;
-import com.WalkiePaw.presentation.domain.member.response.*;
-import com.WalkiePaw.presentation.domain.member.request.*;
+import com.WalkiePaw.presentation.domain.member.dto.MemberUpdateParam;
+import com.WalkiePaw.presentation.domain.member.dto.MemberAddParam;
+import com.WalkiePaw.presentation.domain.member.dto.SocialSignUpParam;
+import com.WalkiePaw.presentation.domain.member.dto.request.*;
+import com.WalkiePaw.presentation.domain.member.dto.response.*;
 import com.WalkiePaw.security.CustomPasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,17 +48,17 @@ public class MemberService {
         ));
     }
 
-    public Long save(final MemberAddRequest request) {
-        Member member = request.toEntity();
+    public Long save(final MemberAddParam param) {
+        Member member = MemberAddParam.toEntity(param);
         passwordEncoder.encodePassword(member);
         return memberRepository.save(member).getId();
     }
 
-    public void update(final Long id, final MemberUpdateRequest request) {
+    public void update(final Long id, final MemberUpdateParam param) {
         Member member = memberRepository.findById(id).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
-        member.updateMember(request);
+        member.updateMember(param);
     }
 
     @Transactional(readOnly = true)
@@ -72,11 +75,11 @@ public class MemberService {
         ));
     }
 
-    public void updatePasswd(final Long memberId, final MemberPasswdUpdateRequest request) {
+    public void updatePasswd(final Long memberId, final String password) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
-        member.updatePasswd(request.getPassword());
+        member.updatePasswd(password);
         passwordEncoder.encodePassword(member);
     }
 
@@ -119,17 +122,15 @@ public class MemberService {
     }
 
 
-    public FindEmailResponse findEmail(final FindEmailRequest request) {
-        Member member = memberRepository.findByNameAndPhoneNumber(request.getName(), request.getPhoneNumber()).orElseThrow(
+    public FindEmailResponse findEmail(final String name, final String phoneNumber) {
+        Member member = memberRepository.findByNameAndPhoneNumber(name, phoneNumber).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
         return new FindEmailResponse(maskedMail(member.getEmail()));
     }
 
-    public FindPasswdResponse findPasswd(final FindPasswdRequest request) {
-        Optional<Member> member = memberRepository.findByEmailAndName(
-            request.getEmail(),
-            request.getName());
+    public FindPasswdResponse findPasswd(final String email, final String name) {
+        Optional<Member> member = memberRepository.findByEmailAndName(email, name);
         if(member.isEmpty()) {
             return new FindPasswdResponse(FindPasswdResult.USER_NOT_FOUND);
         }
@@ -139,7 +140,7 @@ public class MemberService {
          */
         Integer authNumber = mailService.makeRandomNumber();
         String setFrom = "no.reply.walkiepaw@gmail.com"; // email-config에 설정한 자신의 이메일 주소를 입력
-        String toMail = request.getEmail();
+        String toMail = email;
         String title = "인증 이메일 입니다."; // 이메일 제목
         String content =
                 "인증 번호는 " + authNumber + "입니다." +
@@ -174,25 +175,24 @@ public class MemberService {
         );
     }
 
-    public Long socialSignUp(final SocialSignUpRequest request) {
-        Member member = memberRepository.findByEmail(request.getEmail()).orElseThrow(
+    public Long socialSignUp(final SocialSignUpParam param) {
+        Member member = memberRepository.findByEmail(param.getEmail()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_EMAIL)
         );
-        return member.updateBySocialSignUpRequest(request);
+        return member.updateBySocialSignUpRequest(param);
     }
 
-    public void updateSeletedAddr(Long memberId, UpdateSelectedAddrRequest request) {
+    public void updateSeletedAddr(final Long memberId, final String selectedAddresses) {
         Member member = memberRepository.findById(memberId).orElseThrow(
-            () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
+                () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
-        member.updateSelectedAdrrs(request);
+        member.updateSelectedAdrrs(selectedAddresses);
     }
 
     public AddressesGetResponse getAddressesByMemberId(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
             () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
-        log.info("member: {}", member);
         return AddressesGetResponse.from(member);
     }
 

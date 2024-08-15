@@ -1,8 +1,8 @@
 package com.WalkiePaw.domain.chatroom.repository;
 
 import com.WalkiePaw.domain.chatroom.entity.Chatroom;
-import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomListResponse;
-import com.WalkiePaw.presentation.domain.chatroom.response.TransactionResponse;
+import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomListResponse;
+import com.WalkiePaw.presentation.domain.chatroom.dto.response.TransactionResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

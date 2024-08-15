@@ -1,7 +1,7 @@
 package com.WalkiePaw.domain.review.repository;
 
 import com.WalkiePaw.domain.board.entity.BoardCategory;
-import com.WalkiePaw.presentation.domain.review.response.ReviewListResponse;
+import com.WalkiePaw.presentation.domain.review.dto.response.ReviewListResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 

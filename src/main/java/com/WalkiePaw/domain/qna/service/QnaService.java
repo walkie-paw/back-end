@@ -5,10 +5,11 @@ import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.domain.qna.entity.Qna;
 import com.WalkiePaw.domain.qna.repository.QnaRepository;
 import com.WalkiePaw.global.exception.BadRequestException;
-import com.WalkiePaw.presentation.domain.qna.response.*;
-import com.WalkiePaw.presentation.domain.qna.request.QnaAddRequest;
-import com.WalkiePaw.presentation.domain.qna.request.QnaUpdateRequest;
-import com.WalkiePaw.presentation.domain.qna.request.ReplyUpdateRequest;
+import com.WalkiePaw.presentation.domain.qna.dto.QnaAddParam;
+import com.WalkiePaw.presentation.domain.qna.dto.QnaUpdateParam;
+import com.WalkiePaw.presentation.domain.qna.dto.request.ReplyUpdateRequest;
+import com.WalkiePaw.presentation.domain.qna.dto.response.QnaGetResponse;
+import com.WalkiePaw.presentation.domain.qna.dto.response.QnaListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,29 +44,28 @@ public class QnaService {
         return QnaGetResponse.from(qna, member);
     }
 
-    public Long save(final QnaAddRequest request) {
-        boolean existsById = memberRepository.existsById(request.getMemberId());
+    public Long save(final QnaAddParam param) {
+        boolean existsById = memberRepository.existsById(param.getMemberId());
         if (!existsById) {
             throw new BadRequestException(NOT_FOUND_MEMBER_ID);
         }
-        return qnaRepository.save(QnaAddRequest.toEntity(request)).getId();
+        return qnaRepository.save(QnaAddParam.toEntity(param)).getId();
     }
 
-    public void update(final Long qnaId, final QnaUpdateRequest request) {
+    public void update(final Long qnaId, final QnaUpdateParam param) {
         Qna qna = qnaRepository.findById(qnaId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_QNA_ID)
         );
-        qna.update(request);
+        qna.update(param.getTitle(), param.getContent(), param.getReply(), param.getStatus());
     }
 
     /**
      * TODO - query 확인하기
      */
-    public void updateReply(final Long qnaId, final ReplyUpdateRequest request) {
-        qnaRepository.existsById(qnaId);
+    public void updateReply(final Long qnaId, final String reply) {
         qnaRepository.findById(qnaId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_QNA_ID))
-                .updateReply(request);
+                .updateReply(reply);
     }
 
     public Page<QnaListResponse> findAllByCond(final String status, Pageable pageable) {

@@ -2,10 +2,11 @@ package com.WalkiePaw.presentation.domain.review;
 
 import com.WalkiePaw.domain.board.entity.BoardCategory;
 import com.WalkiePaw.domain.review.service.ReviewService;
-import com.WalkiePaw.presentation.domain.review.response.ReviewDetailResponse;
-import com.WalkiePaw.presentation.domain.review.response.ReviewListResponse;
-import com.WalkiePaw.presentation.domain.review.request.ReviewSaveRequest;
-import com.WalkiePaw.presentation.domain.review.request.ReviewUpdateRequest;
+import com.WalkiePaw.presentation.domain.review.dto.ReviewSaveParam;
+import com.WalkiePaw.presentation.domain.review.dto.response.ReviewDetailResponse;
+import com.WalkiePaw.presentation.domain.review.dto.response.ReviewListResponse;
+import com.WalkiePaw.presentation.domain.review.dto.request.ReviewSaveRequest;
+import com.WalkiePaw.presentation.domain.review.dto.request.ReviewUpdateRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +32,7 @@ public class ReviewController {
             @PathVariable("id") final Long revieweeId,
             @RequestParam("category") BoardCategory category
     ) {
-        Slice<ReviewListResponse> reviews = reviewService.findByRevieweeId(pageable, revieweeId, category);
+        var reviews = reviewService.findByRevieweeId(pageable, revieweeId, category);
         return ResponseEntity.ok(reviews);
     }
 
@@ -41,25 +42,26 @@ public class ReviewController {
             @PathVariable("id") final Long reviewerId,
             @RequestParam("category") BoardCategory category
     ) {
-        Slice<ReviewListResponse> reviews = reviewService.findByReviewerId(pageable, reviewerId, category);
+        var reviews = reviewService.findByReviewerId(pageable, reviewerId, category);
         return ResponseEntity.ok(reviews);
     }
 
     @PostMapping
     public ResponseEntity<Void> saveReview(final @RequestBody ReviewSaveRequest request) {
-        Long id = reviewService.addReview(request);
+        ReviewSaveParam param = new ReviewSaveParam(request);
+        Long id = reviewService.addReview(param);
         return ResponseEntity.created(URI.create(REVIEWS_URI + id)).build();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ReviewDetailResponse> getReview(final @PathVariable Long id) {
-        ReviewDetailResponse response = reviewService.findById(id);
+        var response = reviewService.findById(id);
         return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<Void> updateReview(final @PathVariable Long id, final @RequestBody ReviewUpdateRequest request) {
-        reviewService.updateReview(id, request);
+        reviewService.updateReview(id, request.content(), request.point());
         return ResponseEntity.noContent().build();
     }
     

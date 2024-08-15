@@ -7,18 +7,16 @@ import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.domain.report.entity.BoardReport;
 import com.WalkiePaw.domain.report.repository.BoardReport.BoardReportRepository;
 import com.WalkiePaw.global.exception.BadRequestException;
-import com.WalkiePaw.presentation.domain.report.boardReportDto.request.BoardReportAddRequest;
-import com.WalkiePaw.presentation.domain.report.boardReportDto.request.BoardReportUpdateRequest;
 import com.WalkiePaw.presentation.domain.report.boardReportDto.response.BoardReportGetResponse;
 import com.WalkiePaw.presentation.domain.report.boardReportDto.response.BoardReportListResponse;
+import com.WalkiePaw.presentation.domain.report.boardReportDto.BoardReportAddParam;
+import com.WalkiePaw.presentation.domain.report.boardReportDto.BoardReportUpdateParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static com.WalkiePaw.global.exception.ExceptionCode.*;
 
@@ -52,30 +50,30 @@ public class BoardReportService {
         return boardReportRepository.findAllWithRelations(pageable);
     }
 
-    public Long save(final BoardReportAddRequest request) {
-        Member member = memberRepository.findWithBoardById(request.getMemberId()).orElseThrow(
+    public Long save(final BoardReportAddParam param) {
+        Member member = memberRepository.findWithBoardById(param.getMemberId()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
-        Board board = boardRepository.findById(request.getBoardId()).orElseThrow(
+        Board board = boardRepository.findById(param.getBoardId()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_BOARD_ID)
         );
-        return boardReportRepository.save(BoardReportAddRequest.toEntity(request, member.getId(), board.getId())).getId();
+        return boardReportRepository.save(BoardReportAddParam.toEntity(param)).getId();
     }
 
     /**
      * TODO - update 메소드 수정 필요
      */
-    public void update(final Long boardReportId, final BoardReportUpdateRequest request) {
-        Member member = memberRepository.findWithBoardById(request.getMemberId()).orElseThrow(
+    public void update(final Long boardReportId, final BoardReportUpdateParam param) {
+        Member member = memberRepository.findWithBoardById(param.getMemberId()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
-        Board board = boardRepository.findById(request.getBoardId()).orElseThrow(
+        Board board = boardRepository.findById(param.getBoardId()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_BOARD_ID)
         );
         BoardReport boardReport = boardReportRepository.findById(boardReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_BOARD_REPORT_ID)
         );
-        boardReport.update(request, member.getId(), board.getId());
+        boardReport.update(param.getReason(), param.getContent(), member.getId(), board.getId());
     }
 
     public void blind(final Long boardReportId) {

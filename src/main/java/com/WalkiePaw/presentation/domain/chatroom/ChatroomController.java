@@ -1,11 +1,12 @@
 package com.WalkiePaw.presentation.domain.chatroom;
 
-import com.WalkiePaw.presentation.domain.chatroom.request.ChatroomUpdateStatusRequest;
-import com.WalkiePaw.presentation.domain.chatroom.response.TransactionResponse;
 import com.WalkiePaw.domain.chatroom.service.ChatroomService;
-import com.WalkiePaw.presentation.domain.chatroom.request.ChatroomAddRequest;
-import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomListResponse;
-import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomRespnose;
+import com.WalkiePaw.presentation.domain.chatroom.dto.ChatroomAddParam;
+import com.WalkiePaw.presentation.domain.chatroom.dto.request.ChatroomAddRequest;
+import com.WalkiePaw.presentation.domain.chatroom.dto.request.ChatroomStatusUpdateRequest;
+import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomListResponse;
+import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomRespnose;
+import com.WalkiePaw.presentation.domain.chatroom.dto.response.TransactionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,21 +26,16 @@ public class ChatroomController {
     private final ChatroomService chatroomService;
     private static final String CHATROOM_URI = "/chatrooms/";
 
-///api/v1/{domain}-> get : 목록
-///api/v1/{domain} -> post : 등록
-///api/v1/{domain}/{id} -> get : 조회
-///api/v1/{domain}/{id} -> patch  : 수정
-///api/v1/{domain}/{id} -> delete : 삭제
-
     @GetMapping
     public ResponseEntity<Slice<ChatroomListResponse>> getChatroomList(@RequestParam("id") final Long memberId, Pageable pageable) {
-        Slice<ChatroomListResponse> chatrooms = chatroomService.findAllByMemberId(memberId, pageable);
+        var chatrooms = chatroomService.findAllByMemberId(memberId, pageable);
         return ResponseEntity.ok(chatrooms);
     }
 
     @PostMapping
     public ResponseEntity<Void> addChatroom(final @RequestBody ChatroomAddRequest request) {
-        Long id = chatroomService.saveChatroom(request);
+        var param = new ChatroomAddParam(request);
+        Long id = chatroomService.saveChatroom(param);
         return ResponseEntity.created(URI.create(CHATROOM_URI + id)).build();
     }
 
@@ -51,15 +47,15 @@ public class ChatroomController {
 
     @GetMapping("/{id}/transaction")
     public ResponseEntity<Page<TransactionResponse>> getTransaction(final @PathVariable("id") Long memberId, Pageable pageable) {
-        Page<TransactionResponse> transaction = chatroomService.findTransaction(memberId, pageable);
+        var transaction = chatroomService.findTransaction(memberId, pageable);
         return ResponseEntity.ok(transaction);
     }
 
     @PatchMapping("/change-status")
     public ResponseEntity<Void> updateChatroomStatus(
-            final @RequestBody ChatroomUpdateStatusRequest request
+            final @RequestBody ChatroomStatusUpdateRequest request
             ) {
-        chatroomService.updateChatroomStatus(request.getChatroomId(), request.getStatus());
+        chatroomService.updateChatroomStatus(request.chatroomId(), request.status());
         return ResponseEntity.noContent().build();
     }
 

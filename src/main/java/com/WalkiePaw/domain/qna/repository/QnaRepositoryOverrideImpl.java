@@ -1,10 +1,9 @@
 package com.WalkiePaw.domain.qna.repository;
 
-import com.WalkiePaw.domain.member.entity.QMember;
 import com.WalkiePaw.domain.qna.entity.Qna;
 import com.WalkiePaw.domain.qna.entity.QnaStatus;
 import com.WalkiePaw.global.util.Querydsl4RepositorySupport;
-import com.WalkiePaw.presentation.domain.qna.response.QnaListResponse;
+import com.WalkiePaw.presentation.domain.qna.dto.response.QnaListResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.data.domain.Page;

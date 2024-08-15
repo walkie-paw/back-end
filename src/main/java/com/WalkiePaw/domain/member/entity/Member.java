@@ -3,9 +3,8 @@ package com.WalkiePaw.domain.member.entity;
 import static com.WalkiePaw.domain.member.entity.Role.USER;
 
 import com.WalkiePaw.domain.common.BaseEntity;
-import com.WalkiePaw.presentation.domain.member.request.MemberUpdateRequest;
-import com.WalkiePaw.presentation.domain.member.request.SocialSignUpRequest;
-import com.WalkiePaw.presentation.domain.member.request.UpdateSelectedAddrRequest;
+import com.WalkiePaw.presentation.domain.member.dto.MemberUpdateParam;
+import com.WalkiePaw.presentation.domain.member.dto.SocialSignUpParam;
 import jakarta.persistence.*;
 import lombok.*;
 import net.minidev.json.annotate.JsonIgnore;
@@ -65,25 +64,22 @@ public class Member extends BaseEntity {
         this.rating = rating;
         this.photo = photo;
         this.status = MemberStatus.GENERAL;
-        this.reportedCnt = 0;
-        this.recruitCnt = 0;
-        this.researchCnt = 0;
         this.role = USER;
         this.socialType = socialType;
         this.socialId = socialId;
     }
 
-    public void updateMember(MemberUpdateRequest request) {
-        this.name = request.getName();
-        this.nickname = request.getNickname();
-        this.phoneNumber = request.getPhoneNumber();
-        this.memberAddress = request.getAddress();
-        this.birth = request.getBirth();
-        this.profile = request.getProfile();
-        this.rating = request.getRating();
-        this.photo = request.getPhoto();
-        this.status = request.getStatus();
-        this.reportedCnt = request.getReportedCnt();
+    public void updateMember(MemberUpdateParam param) {
+        this.name = param.getName();
+        this.nickname = param.getNickname();
+        this.phoneNumber = param.getPhoneNumber();
+        this.memberAddress = param.getAddress();
+        this.birth = param.getBirth();
+        this.profile = param.getProfile();
+        this.rating = param.getRating();
+        this.photo = param.getPhoto();
+        this.status = param.getStatus();
+        this.reportedCnt = param.getReportedCnt();
     }
 
     public void updatePasswd(String password) {
@@ -128,19 +124,19 @@ public class Member extends BaseEntity {
         this.password = passwordEncoder.encode(this.password);
     }
 
-    public Long updateBySocialSignUpRequest(final SocialSignUpRequest request) {
-        this.nickname = request.getNickname();
-        this.phoneNumber = request.getPhoneNumber();
-        this.birth = request.getBirth();
-        this.memberAddress = request.getAddress();
-        this.profile = request.getProfile();
-        this.photo = request.getPhoto();
+    public Long updateBySocialSignUpRequest(final SocialSignUpParam param) {
+        this.nickname = param.getNickname();
+        this.phoneNumber = param.getPhoneNumber();
+        this.birth = param.getBirth();
+        this.memberAddress = param.getAddress();
+        this.profile = param.getProfile();
+        this.photo = param.getPhoto();
         this.role = USER;
         return this.id;
     }
 
-    public void updateSelectedAdrrs(UpdateSelectedAddrRequest request) {
-        this.selectedAddresses = request.getSelectedAddresses();
+    public void updateSelectedAdrrs(String selectedAddresses) {
+        this.selectedAddresses = selectedAddresses;
     }
 
     /**

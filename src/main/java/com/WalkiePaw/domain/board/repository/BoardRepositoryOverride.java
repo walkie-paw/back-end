@@ -2,8 +2,8 @@ package com.WalkiePaw.domain.board.repository;
 
 import com.WalkiePaw.domain.board.entity.Board;
 import com.WalkiePaw.domain.board.entity.BoardCategory;
-import com.WalkiePaw.presentation.domain.board.response.BoardListResponse;
-import com.WalkiePaw.presentation.domain.board.response.BoardMypageListResponse;
+import com.WalkiePaw.presentation.domain.board.dto.response.BoardListResponse;
+import com.WalkiePaw.presentation.domain.board.dto.response.BoardMypageListResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

@@ -3,7 +3,7 @@ package com.WalkiePaw.presentation.domain.chat;
 import com.WalkiePaw.domain.chat.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.WalkiePaw.presentation.domain.chat.response.ChatMsgListResponse;
+import com.WalkiePaw.presentation.domain.chat.dto.response.ChatMsgListResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,7 @@ public class ChatController {
 
     @GetMapping
     public ResponseEntity<List<ChatMsgListResponse>> getChatListByChatroomId(final @RequestParam Long chatroomId) {
-        List<ChatMsgListResponse> chats = chatService.findChatsByChatroomId(chatroomId);
+        var chats = chatService.findChatsByChatroomId(chatroomId);
         return ResponseEntity.ok(chats);
     }
 
