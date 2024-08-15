@@ -1,8 +1,7 @@
 package com.WalkiePaw.presentation.domain.board.dto;
 
 import com.WalkiePaw.domain.board.entity.PriceType;
-import com.WalkiePaw.presentation.domain.board.ImageDto;
-import com.WalkiePaw.presentation.domain.board.request.BoardUpdateRequest;
+import com.WalkiePaw.presentation.domain.board.dto.request.BoardUpdateRequest;
 import lombok.Data;
 
 import java.time.LocalDateTime;

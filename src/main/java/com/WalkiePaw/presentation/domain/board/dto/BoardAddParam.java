@@ -3,8 +3,7 @@ package com.WalkiePaw.presentation.domain.board.dto;
 import com.WalkiePaw.domain.board.entity.Board;
 import com.WalkiePaw.domain.board.entity.BoardCategory;
 import com.WalkiePaw.domain.board.entity.PriceType;
-import com.WalkiePaw.presentation.domain.board.ImageDto;
-import com.WalkiePaw.presentation.domain.board.request.BoardAddRequest;
+import com.WalkiePaw.presentation.domain.board.dto.request.BoardAddRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

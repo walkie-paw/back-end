@@ -1,7 +1,7 @@
 package com.WalkiePaw.domain.member.Repository;
 
 import com.WalkiePaw.domain.member.entity.Member;
-import com.WalkiePaw.presentation.domain.member.response.MemberListResponse;
+import com.WalkiePaw.presentation.domain.member.dto.response.MemberListResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

@@ -6,7 +6,7 @@ import static com.WalkiePaw.domain.review.entity.QReview.*;
 import com.WalkiePaw.domain.board.entity.BoardCategory;
 import com.WalkiePaw.domain.review.entity.Review;
 import com.WalkiePaw.global.util.Querydsl4RepositorySupport;
-import com.WalkiePaw.presentation.domain.review.response.ReviewListResponse;
+import com.WalkiePaw.presentation.domain.review.dto.response.ReviewListResponse;
 import com.querydsl.core.types.Projections;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

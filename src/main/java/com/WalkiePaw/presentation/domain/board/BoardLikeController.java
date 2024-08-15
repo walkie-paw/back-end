@@ -1,9 +1,8 @@
 package com.WalkiePaw.presentation.domain.board;
 
 import com.WalkiePaw.domain.board.service.BoardLikeService;
-import com.WalkiePaw.domain.board.service.BoardService;
-import com.WalkiePaw.presentation.domain.board.request.BoardLikeRequest;
-import com.WalkiePaw.presentation.domain.board.response.BoardListResponse;
+import com.WalkiePaw.presentation.domain.board.dto.request.BoardLikeRequest;
+import com.WalkiePaw.presentation.domain.board.dto.response.BoardListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -22,7 +21,7 @@ public class BoardLikeController {
 
     @GetMapping("/{memberId}")
     public ResponseEntity<Slice<BoardListResponse>> findLikeBoardList(final @PathVariable Long memberId, Pageable pageable) {
-        Slice<BoardListResponse> likeBoardList = boardLikeService.findLikeBoardList(memberId, pageable);
+        var likeBoardList = boardLikeService.findLikeBoardList(memberId, pageable);
         return ResponseEntity.ok(likeBoardList);
     }
 

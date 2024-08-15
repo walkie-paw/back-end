@@ -2,8 +2,8 @@ package com.WalkiePaw.domain.board.repository;
 
 import com.WalkiePaw.domain.board.entity.*;
 import com.WalkiePaw.global.util.Querydsl4RepositorySupport;
-import com.WalkiePaw.presentation.domain.board.response.BoardListResponse;
-import com.WalkiePaw.presentation.domain.board.response.BoardMypageListResponse;
+import com.WalkiePaw.presentation.domain.board.dto.response.BoardListResponse;
+import com.WalkiePaw.presentation.domain.board.dto.response.BoardMypageListResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;

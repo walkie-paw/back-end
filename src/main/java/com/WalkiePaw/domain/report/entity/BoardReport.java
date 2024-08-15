@@ -33,9 +33,9 @@ public class BoardReport extends BaseEntity {
         this.status = BoardReportStatus.UNRESOLVED;
     }
 
-    public void update(BoardReportUpdateRequest request, Long memberId, Long boardId) {
-        this.reason = request.getReason();
-        this.content = request.getContent();
+    public void update(BoardReportCategory reason, String content, Long memberId, Long boardId) {
+        this.reason = reason;
+        this.content = content;
         this.memberId = memberId;
         this.boardId = boardId;
     }

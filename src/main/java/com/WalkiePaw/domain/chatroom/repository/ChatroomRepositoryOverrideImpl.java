@@ -2,10 +2,9 @@ package com.WalkiePaw.domain.chatroom.repository;
 
 import com.WalkiePaw.domain.chatroom.entity.Chatroom;
 import com.WalkiePaw.domain.member.entity.QMember;
-import com.WalkiePaw.domain.review.entity.QReview;
 import com.WalkiePaw.global.util.Querydsl4RepositorySupport;
-import com.WalkiePaw.presentation.domain.chatroom.response.ChatroomListResponse;
-import com.WalkiePaw.presentation.domain.chatroom.response.TransactionResponse;
+import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomListResponse;
+import com.WalkiePaw.presentation.domain.chatroom.dto.response.TransactionResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;

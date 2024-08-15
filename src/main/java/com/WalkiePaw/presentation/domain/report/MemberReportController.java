@@ -1,6 +1,8 @@
 package com.WalkiePaw.presentation.domain.report;
 
 import com.WalkiePaw.domain.report.service.MemberReportService;
+import com.WalkiePaw.presentation.domain.report.memberReportDto.MemberReportAddParam;
+import com.WalkiePaw.presentation.domain.report.memberReportDto.MemberReportUpdateParam;
 import com.WalkiePaw.presentation.domain.report.memberReportDto.request.MemberReportAddRequest;
 import com.WalkiePaw.presentation.domain.report.memberReportDto.response.MemberReportGetResponse;
 import com.WalkiePaw.presentation.domain.report.memberReportDto.response.MemberReportListResponse;
@@ -25,26 +27,27 @@ public class MemberReportController {
 
     @GetMapping
     public ResponseEntity<Page<MemberReportListResponse>> getMemberReports(final Pageable pageable) {
-        Page<MemberReportListResponse> responses = memberReportService.findAll(pageable);
-        return ResponseEntity.ok()
-                .body(responses);
+        var responses = memberReportService.findAll(pageable);
+        return ResponseEntity.ok().body(responses);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<MemberReportGetResponse> getMemberReport(final @PathVariable("id") Long memberReportId) {
-        MemberReportGetResponse response = memberReportService.findById(memberReportId);
+        var response = memberReportService.findById(memberReportId);
         return ResponseEntity.ok().body(response);
     }
 
     @PostMapping
     ResponseEntity<Void> addMemberReport(final @Validated @RequestBody MemberReportAddRequest request) {
-        Long memberReportId = memberReportService.save(request);
+        var param = new MemberReportAddParam(request);
+        Long memberReportId = memberReportService.save(param);
         return ResponseEntity.created(URI.create(MEMBER_REPORT_URL + memberReportId)).build();
     }
 
     @PatchMapping("/{id}")
     ResponseEntity<Void> updateMemberReport(final @PathVariable("id") Long memberReportId, final @Validated @RequestBody MemberReportUpdateRequest request) {
-        memberReportService.update(memberReportId, request);
+        var param = new MemberReportUpdateParam(request);
+        memberReportService.update(memberReportId, param);
         return ResponseEntity.noContent().build();
     }
 
