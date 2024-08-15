@@ -1,3 +1,4 @@
+
 # 프로젝트 개요
 
 ### 팀명
@@ -31,9 +32,9 @@ WalkiePaw를 통해 반려견 산책은 더 이상 부담이 되지 않을 것�
 
 - 협업 도구 : ERDCloud, Figma, Notion, Slack
 - 버전 관리 도구 : Git, GitHub
-- Backend : Java, SpringBoot, MSA, JPA(ORM), Querydsl
+- Backend : Java, SpringBoot, Spring Data JPA(ORM)
 - Frontend : HTML, CSS, Javascript, React, node.js
-- 테스트 도구 : MySQLWorkbench, JUnit
+- 테스트 도구 : JUnit
 
 ### **주요 기능**
 
@@ -45,11 +46,7 @@ WalkiePaw를 통해 반려견 산책은 더 이상 부담이 되지 않을 것�
     - 산책사 서비스, 가능 시간, 요금 목록
 3. **예약 시스템:**
     - 반려동물 산책 예약
-    - 일정 관리 통합
-4. **결제 시스템:**
-    - 안전한 결제 게이트웨이
-    - 거래 내역 및 인보이스
-5. **리뷰 및 평가:**
+4. **리뷰 및 평가:**
     - 산책사에 대한 리뷰 및 평가 제공
     - 서비스 품질 유지 피드백 시스템
-    
+   
