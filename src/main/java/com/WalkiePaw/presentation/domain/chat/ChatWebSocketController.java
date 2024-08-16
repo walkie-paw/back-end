@@ -1,6 +1,7 @@
 package com.WalkiePaw.presentation.domain.chat;
 
 import com.WalkiePaw.domain.chat.service.ChatService;
+import com.WalkiePaw.presentation.domain.chat.dto.ChatAddParam;
 import com.WalkiePaw.presentation.domain.chat.dto.request.ChatAddRequest;
 import com.WalkiePaw.presentation.domain.chat.dto.response.ChatWebSocketResponse;
 import jakarta.validation.constraints.Positive;
@@ -26,6 +27,8 @@ public class ChatWebSocketController {
         String destination = "/chats/" + chatroomId;
         ChatWebSocketResponse response = new ChatWebSocketResponse(request.writerId(), request.nickname(), request.content(), request.sentTime());
         simpMessagingTemplate.convertAndSend(destination, response);
-        chatService.saveChatMsg(chatroomId, request);
+
+        ChatAddParam param = new ChatAddParam(request);
+        chatService.saveChatMsg(chatroomId, param);
     }
 }

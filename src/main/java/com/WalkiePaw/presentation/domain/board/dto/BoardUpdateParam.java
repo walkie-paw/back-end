@@ -2,24 +2,26 @@ package com.WalkiePaw.presentation.domain.board.dto;
 
 import com.WalkiePaw.domain.board.entity.PriceType;
 import com.WalkiePaw.presentation.domain.board.dto.request.BoardUpdateRequest;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
 public class BoardUpdateParam {
-
-    private final String title;
-    private final String content;
+    private final @NotBlank String title;
+    private final @NotBlank String content;
     private final int price;
-    private final PriceType priceType;
+    private final @NotNull PriceType priceType;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
-    private final String location;
-    private final String detailedLocation;
+    private final @NotBlank String location;
+    private final @NotBlank String detailedLocation;
     private final boolean priceProposal;
-    private List<ImageDto> photoUrls;
+    private final List<ImageDto> photoUrls;
 
     public BoardUpdateParam(final BoardUpdateRequest request) {
         this.title = request.title();

@@ -3,15 +3,16 @@ package com.WalkiePaw.presentation.domain.review.dto;
 import com.WalkiePaw.domain.board.entity.BoardCategory;
 import com.WalkiePaw.domain.review.entity.Review;
 import com.WalkiePaw.presentation.domain.review.dto.request.ReviewSaveRequest;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 
 @Getter
 public class ReviewSaveParam {
-    private final int point;
-    private final String content;
-    private final Long chatroomId;
-    private final Long reviewerId;
-    private final BoardCategory category;
+    private final @Positive @Max(5) int point;
+    private final @NotBlank String content;
+    private final @Positive Long chatroomId;
+    private final @Positive Long reviewerId;
+    private final @NotNull BoardCategory category;
 
     public ReviewSaveParam(ReviewSaveRequest request) {
         this.point = request.point();

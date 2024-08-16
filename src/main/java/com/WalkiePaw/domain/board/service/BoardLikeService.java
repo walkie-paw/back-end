@@ -7,12 +7,14 @@ import com.WalkiePaw.domain.board.repository.BoardRepository;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.global.exception.BadRequestException;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardListResponse;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -24,6 +26,7 @@ import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_BOARD_ID;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Validated
 public class BoardLikeService {
 
     public static final int BOARD_ID_INDEX = 0;
@@ -33,11 +36,11 @@ public class BoardLikeService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public Slice<BoardListResponse> findLikeBoardList(final Long memberId, final Pageable pageable) {
+    public Slice<BoardListResponse> findLikeBoardList(final @Positive Long memberId, final Pageable pageable) {
         return boardRepository.findLikeBoardList(memberId, pageable);
     }
 
-    public Long saveBoardLike(final Long boardId, final Long loginUserId) {
+    public Long saveBoardLike(final @Positive Long boardId, final Long loginUserId) {
         boolean existsBoard = boardRepository.existsById(boardId);
         if (!existsBoard) {
             throw new BadRequestException(NOT_FOUND_BOARD_ID);
@@ -53,7 +56,7 @@ public class BoardLikeService {
         return boardLikeRepository.save(boardLike).getId();
     }
 
-    public void cancelBoardLike(final Long boardId, final Long loginUserId) {
+    public void cancelBoardLike(final @Positive Long boardId, final @Positive Long loginUserId) {
         BoardLike boardLike = boardLikeRepository.findByMemberIdAndBoardId(loginUserId, boardId);
         boardLikeRepository.delete(boardLike);
     }

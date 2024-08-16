@@ -3,15 +3,18 @@ package com.WalkiePaw.presentation.domain.report.memberReportDto;
 import com.WalkiePaw.domain.report.entity.MemberReport;
 import com.WalkiePaw.domain.report.entity.MemberReportCategory;
 import com.WalkiePaw.presentation.domain.report.memberReportDto.request.MemberReportAddRequest;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 
 @Getter
 public class MemberReportAddParam {
 
-    private final String content;
-    private final MemberReportCategory reason;
-    private final Long reportingMemberId;
-    private final Long reportedMemberId;
+    private final @NotBlank String content;
+    private final @NotNull MemberReportCategory reason;
+    private final @Positive Long reportingMemberId;
+    private final @Positive Long reportedMemberId;
 
     public MemberReportAddParam(MemberReportAddRequest request) {
         this.content = request.content();

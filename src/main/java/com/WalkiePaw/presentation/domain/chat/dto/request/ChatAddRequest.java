@@ -12,7 +12,4 @@ public record ChatAddRequest(
         String sentTime,
         @NotBlank String nickname,
         LocalDateTime createdDate) {
-    public ChatMessage toEntity(final ChatAddRequest request, final Long chatroomId) {
-        return new ChatMessage(chatroomId, request.writerId, request.content);
-    }
 }

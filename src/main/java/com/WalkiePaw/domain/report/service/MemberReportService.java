@@ -10,11 +10,14 @@ import com.WalkiePaw.presentation.domain.report.memberReportDto.MemberReportUpda
 import com.WalkiePaw.presentation.domain.report.memberReportDto.request.MemberReportUpdateRequest;
 import com.WalkiePaw.presentation.domain.report.memberReportDto.response.MemberReportGetResponse;
 import com.WalkiePaw.presentation.domain.report.memberReportDto.response.MemberReportListResponse;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -26,6 +29,7 @@ import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_MEMBER_REPO
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Validated
 public class MemberReportService {
 
     public static final int REQUIRED_MEMBER_COUNT = 2;
@@ -33,7 +37,7 @@ public class MemberReportService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public MemberReportGetResponse findById(final Long memberReportId) {
+    public MemberReportGetResponse findById(final @Positive Long memberReportId) {
         boolean exists = memberReportRepository.existsById(memberReportId);
         if (!exists) {
             throw new BadRequestException(NOT_FOUND_MEMBER_REPORT_ID);
@@ -46,7 +50,7 @@ public class MemberReportService {
         return memberReportRepository.findAllWithRelations(pageable);
     }
 
-    public Long save(final MemberReportAddParam param) {
+    public Long save(final @Validated MemberReportAddParam param) {
         Set<Long> idSet = convertIds(param.getReportedMemberId(), param.getReportingMemberId());
 
         int existsCount = memberRepository.existsByIdIn(idSet);
@@ -57,11 +61,11 @@ public class MemberReportService {
         return memberReportRepository.save(MemberReportAddParam.toEntity(param)).getId();
     }
 
-    private static Set<Long> convertIds(final Long... ids) {
+    private static Set<Long> convertIds(final @Positive Long... ids) {
         return Arrays.stream(ids).collect(Collectors.toSet());
     }
 
-    public void update(final Long memberReportId, final MemberReportUpdateParam param) {
+    public void update(final @Positive Long memberReportId, final @Validated MemberReportUpdateParam param) {
         Set<Long> idSet = convertIds(param.getReportedMemberId(), param.getReportingMemberId());
 
         int existsCount = memberRepository.existsByIdIn(idSet);
@@ -76,7 +80,7 @@ public class MemberReportService {
         memberReport.update(param.getContent(), param.getReason());
     }
 
-    public void ban(final Long memberReportId) {
+    public void ban(final @Positive Long memberReportId) {
         MemberReport memberReport = memberReportRepository.findById(memberReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_REPORT_ID)
         );
@@ -87,14 +91,14 @@ public class MemberReportService {
         memberReport.ban();
     }
 
-    public void ignore(final Long memberReportId) {
+    public void ignore(final @Positive Long memberReportId) {
         MemberReport memberReport = memberReportRepository.findById(memberReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_REPORT_ID)
         );
         memberReport.ignore();
     }
 
-    public Page<MemberReportListResponse> findAllByCond(final String status, Pageable pageable) {
+    public Page<MemberReportListResponse> findAllByCond(final @NotBlank String status, Pageable pageable) {
         return memberReportRepository.findAllByCond(status, pageable);
     }
 }

@@ -7,29 +7,32 @@ import com.WalkiePaw.domain.chatroom.repository.ChatroomRepository;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.global.exception.BadRequestException;
+import com.WalkiePaw.presentation.domain.chat.dto.ChatAddParam;
 import com.WalkiePaw.presentation.domain.chat.dto.request.ChatAddRequest;
 import com.WalkiePaw.presentation.domain.chat.dto.response.ChatMsgListResponse;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Set;
 
-import static com.WalkiePaw.global.exception.ExceptionCode.*;
+import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_CHATROOM_ID;
+import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 @Transactional(readOnly = true)
+@Validated
 public class ChatService {
 
     private final ChatMsgRepository chatMsgRepository;
     private final ChatroomRepository chatroomRepository;
     private final MemberRepository memberRepository;
 
-    public List<ChatMsgListResponse> findChatsByChatroomId(final Long chatroomId) {
+    public List<ChatMsgListResponse> findChatsByChatroomId(final @Positive Long chatroomId) {
         List<ChatMessage> chatMessagesList = chatMsgRepository.findWithMemberByChatroomId(chatroomId);
         Set<Member> members = memberRepository.findByIdIn(chatMessagesList.stream().map(ChatMessage::getWriterId).toList());
         return chatMessagesList.stream()
@@ -44,14 +47,14 @@ public class ChatService {
     }
 
     @Transactional
-    public ChatMsgListResponse saveChatMsg(final Long chatroomId, final ChatAddRequest request) {
-        Chatroom chatroom = chatroomRepository.findWithMemberById(chatroomId, request.writerId())
+    public ChatMsgListResponse saveChatMsg(final @Positive Long chatroomId, final @Validated ChatAddParam param) {
+        Chatroom chatroom = chatroomRepository.findWithMemberById(chatroomId, param.getWriterId())
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHATROOM_ID));
-        Member member = memberRepository.findById(request.writerId())
+        Member member = memberRepository.findById(param.getWriterId())
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
-        chatroom.updateLatestMessage(request.content());
-        ChatMessage chatMsg = request.toEntity(request, chatroomId);
-        return ChatMsgListResponse.from(chatMsgRepository.save(chatMsg), request.nickname());
+        chatroom.updateLatestMessage(param.getContent());
+        ChatMessage chatMsg = param.toEntity(param, chatroomId);
+        return ChatMsgListResponse.from(chatMsgRepository.save(chatMsg), param.getNickname());
     }
 
     public void bulkUpdateIsRead(final Long chatroomId) {

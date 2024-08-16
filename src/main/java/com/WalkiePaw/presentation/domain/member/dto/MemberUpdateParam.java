@@ -3,6 +3,10 @@ package com.WalkiePaw.presentation.domain.member.dto;
 import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.domain.member.entity.MemberStatus;
 import com.WalkiePaw.presentation.domain.member.dto.request.MemberUpdateRequest;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -10,17 +14,17 @@ import java.time.LocalDate;
 @Getter
 public class MemberUpdateParam {
 
-    private final String name;
-    private final String nickname;
-    private final String email;
-    private final String phoneNumber;
-    private final String address;
+    private final @Email String email;
+    private final @NotBlank String name;
+    private final @NotBlank String nickname;
+    private final @NotBlank String phoneNumber;
+    private final @NotBlank String address;
     private final LocalDate birth;
     private final String profile;
-    private final double rating;
+    private final @Positive double rating;
     private final String photo;
-    private final MemberStatus status;
-    private final int reportedCnt;
+    private final @NotNull MemberStatus status;
+    private final @Positive int reportedCnt;
 
     public MemberUpdateParam(MemberUpdateRequest request) {
         this.name = request.name();

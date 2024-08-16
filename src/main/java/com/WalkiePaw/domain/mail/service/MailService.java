@@ -7,10 +7,13 @@ import com.WalkiePaw.presentation.domain.mail.dto.response.EmailAuthResponse;
 import com.WalkiePaw.utils.RedisUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.Random;
 
@@ -20,6 +23,7 @@ import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_EMAIL;
 
 @Service
 @RequiredArgsConstructor
+@Validated
 public class MailService {
 
     private final RedisUtil redisUtil;
@@ -28,7 +32,7 @@ public class MailService {
     private final MemberRepository memberRepository;
 
     // 인증번호 검증 메서드
-    public EmailAuthResponse CheckAuthNum(String email, String authNum) {
+    public EmailAuthResponse CheckAuthNum(final @Email String email, final @NotBlank String authNum) {
         if (redisUtil.getData(authNum) == null) { // 검증 실패
             return EmailAuthResponse.builder()
                     .result("Wrong AuthNum")
@@ -43,7 +47,11 @@ public class MailService {
     }
 
     //이메일을 전송합니다.
-    public void mailSend(String setFrom, String toMail, String title, String content) {
+    public void mailSend(
+            final @NotBlank String setFrom,
+            final @NotBlank String toMail,
+            final @NotBlank String title,
+            final @NotBlank String content) {
         MimeMessage message = mailSender.createMimeMessage(); // JavaMailSender 객체를 사용하여 MimeMessage 객체를 생성
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "utf-8");//이메일 메시지와 관련된 설정을 수행합니다.
@@ -63,7 +71,7 @@ public class MailService {
 
 
     // mail을 어디서, 어디로 보내는지, 인증 번호를 html 형식으로 어떻게 보내는지 작성
-    public String joinEmail(String email) {
+    public String joinEmail(final @Email String email) {
         memberRepository.findByEmail(email)
                 .ifPresent(member -> {
                     throw new BadRequestException(DUPLICATED_EMAIL);
@@ -97,7 +105,7 @@ public class MailService {
      * db에 해당하는 email이 존재하면 해당 email의 memberId를 포함한 EmailAuthResponse를 만듦.
      * 만약 없다면 memberId가 빈 EmailAuthResponse를 만듦.
      */
-    private EmailAuthResponse buildEmailAuthResponse(String email) {
+    private EmailAuthResponse buildEmailAuthResponse(final @Email String email) {
         Member member = memberRepository.findByEmail(email).orElseThrow(
             () -> new BadRequestException(NOT_FOUND_EMAIL)
         );

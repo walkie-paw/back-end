@@ -7,23 +7,25 @@ import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.domain.report.entity.BoardReport;
 import com.WalkiePaw.domain.report.repository.BoardReport.BoardReportRepository;
 import com.WalkiePaw.global.exception.BadRequestException;
-import com.WalkiePaw.presentation.domain.report.boardReportDto.response.BoardReportGetResponse;
-import com.WalkiePaw.presentation.domain.report.boardReportDto.response.BoardReportListResponse;
 import com.WalkiePaw.presentation.domain.report.boardReportDto.BoardReportAddParam;
 import com.WalkiePaw.presentation.domain.report.boardReportDto.BoardReportUpdateParam;
+import com.WalkiePaw.presentation.domain.report.boardReportDto.response.BoardReportGetResponse;
+import com.WalkiePaw.presentation.domain.report.boardReportDto.response.BoardReportListResponse;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import static com.WalkiePaw.global.exception.ExceptionCode.*;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
-@Slf4j
+@Validated
 public class BoardReportService {
 
     private final BoardReportRepository boardReportRepository;
@@ -31,7 +33,7 @@ public class BoardReportService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = true)
-    public BoardReportGetResponse findById(final Long boardReportId) {
+    public BoardReportGetResponse findById(final @Positive Long boardReportId) {
         BoardReport boardReport = boardReportRepository.findWithRelations(boardReportId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_REPORT_ID));
 
@@ -50,7 +52,7 @@ public class BoardReportService {
         return boardReportRepository.findAllWithRelations(pageable);
     }
 
-    public Long save(final BoardReportAddParam param) {
+    public Long save(final @Validated BoardReportAddParam param) {
         Member member = memberRepository.findWithBoardById(param.getMemberId()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
@@ -63,7 +65,7 @@ public class BoardReportService {
     /**
      * TODO - update 메소드 수정 필요
      */
-    public void update(final Long boardReportId, final BoardReportUpdateParam param) {
+    public void update(final @Positive Long boardReportId, final @Validated BoardReportUpdateParam param) {
         Member member = memberRepository.findWithBoardById(param.getMemberId()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
@@ -76,7 +78,7 @@ public class BoardReportService {
         boardReport.update(param.getReason(), param.getContent(), member.getId(), board.getId());
     }
 
-    public void blind(final Long boardReportId) {
+    public void blind(final @Positive Long boardReportId) {
         BoardReport boardReport = boardReportRepository.findWithBoardById(boardReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_BOARD_REPORT_ID)
         );
@@ -87,14 +89,14 @@ public class BoardReportService {
         boardReport.blind();
     }
 
-    public void ignore(final Long boardReportId) {
+    public void ignore(final @Positive Long boardReportId) {
         BoardReport boardReport = boardReportRepository.findById(boardReportId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_BOARD_REPORT_ID)
         );
         boardReport.ignore();
     }
 
-    public Page<BoardReportListResponse> findAllByResolvedCond(final String status, Pageable pageable) {
+    public Page<BoardReportListResponse> findAllByResolvedCond(final @NotBlank String status, Pageable pageable) {
         return boardReportRepository.findAllByResolvedCond(status, pageable);
     }
 }
