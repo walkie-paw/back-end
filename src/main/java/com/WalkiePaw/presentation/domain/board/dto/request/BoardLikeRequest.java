@@ -1,9 +1,8 @@
 package com.WalkiePaw.presentation.domain.board.dto.request;
 
-import lombok.Data;
+import jakarta.validation.constraints.Positive;
 
-@Data
-public class BoardLikeRequest {
-    private final Long boardId;
-    private final Long loginUserId;
+public record BoardLikeRequest(
+        @Positive Long boardId,
+        @Positive Long loginUserId) {
 }

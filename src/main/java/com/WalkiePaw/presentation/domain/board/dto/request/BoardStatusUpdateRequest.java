@@ -1,10 +1,10 @@
 package com.WalkiePaw.presentation.domain.board.dto.request;
 
 import com.WalkiePaw.domain.board.entity.BoardStatus;
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
-@Data
-public class BoardStatusUpdateRequest {
-    private final Long boardId;
-    private final BoardStatus status;
+public record BoardStatusUpdateRequest(
+        @Positive @NotNull Long boardId,
+        @NotNull BoardStatus status) {
 }

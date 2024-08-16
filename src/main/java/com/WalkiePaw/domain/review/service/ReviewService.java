@@ -11,18 +11,22 @@ import com.WalkiePaw.global.exception.BadRequestException;
 import com.WalkiePaw.presentation.domain.review.dto.ReviewSaveParam;
 import com.WalkiePaw.presentation.domain.review.dto.response.ReviewDetailResponse;
 import com.WalkiePaw.presentation.domain.review.dto.response.ReviewListResponse;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Validated
 @Transactional(readOnly = true)
 public class ReviewService {
     private final ReviewRepository reviewRepository;
@@ -31,7 +35,7 @@ public class ReviewService {
 
 
     @Transactional
-    public Long addReview(final ReviewSaveParam param) {
+    public Long addReview(final @Validated ReviewSaveParam param) {
         Chatroom chatroom = chatroomRepository.findWithMemberById(param.getChatroomId(), param.getReviewerId())
                 .orElseThrow(() -> new IllegalStateException("잘못된 채팅방 번호입니다."));
         Member reviewer = memberRepository.findById(param.getReviewerId())
@@ -53,24 +57,24 @@ public class ReviewService {
         return reviewRepository.save(review).getId();
     }
 
-    public ReviewDetailResponse findById(final Long reviewId) {
+    public ReviewDetailResponse findById(final @Positive Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalStateException("잘못된 리뷰 번호입니다."));
         return ReviewDetailResponse.from(review);
     }
 
     @Transactional
-    public void updateReview(final Long reviewId, final String content, final int point) {
+    public void updateReview(final @Positive Long reviewId, final @NotBlank String content, final @Positive @Max(5) int point) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new IllegalStateException("잘못된 리뷰 번호입니다."));
         review.update(content, point);
     }
 
-    public Slice<ReviewListResponse> findByReviewerId(Pageable pageable, final Long reviewerId, final BoardCategory category) {
+    public Slice<ReviewListResponse> findByReviewerId(Pageable pageable, final @Positive Long reviewerId, final @NotNull BoardCategory category) {
         return reviewRepository.findByReviewerIdAndCategory(pageable, reviewerId, category);
     }
 
-    public Slice<ReviewListResponse> findByRevieweeId(Pageable pageable, final Long revieweeId, final BoardCategory category) {
+    public Slice<ReviewListResponse> findByRevieweeId(Pageable pageable, final @Positive Long revieweeId, final @NotNull BoardCategory category) {
         return reviewRepository.findByRevieweeIdAndCategory(pageable, revieweeId, category);
     }
 }

@@ -2,6 +2,8 @@ package com.WalkiePaw.presentation.domain.member.dto;
 
 import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.presentation.domain.member.dto.request.MemberAddRequest;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -9,12 +11,12 @@ import java.time.LocalDate;
 @Getter
 public class MemberAddParam {
 
-    private final String name;
-    private final String nickname;
-    private final String email;
-    private final String password;
-    private final String phoneNumber;
-    private final String address;
+    private final @NotBlank String name;
+    private final @NotBlank String nickname;
+    private final @Email String email;
+    private final @NotBlank String password;
+    private final @NotBlank String phoneNumber;
+    private final @NotBlank String address;
     private final LocalDate birth;
     private final String profile;
     private final String photo;

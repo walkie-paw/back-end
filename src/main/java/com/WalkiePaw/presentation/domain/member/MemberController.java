@@ -10,15 +10,22 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Tag(name = "members", description = "멤버 API")
 @RestController
@@ -27,27 +34,28 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
-    private static final String MEMBER_URL = "/members/";
+    private static final String MEMBER_URL = "/api/v1/members/";
 
     @ApiResponse(responseCode = "200")
     @Operation(summary = "멤버 리스트")
     @GetMapping
-    public ResponseEntity<List<MemberListResponse>> memberList() {
-        return ResponseEntity.ok()
-                .body(memberService.findAll());
+    @ResponseStatus(OK)
+    public List<MemberListResponse> memberList() {
+        return memberService.findAll();
     }
 
     @ApiResponse(responseCode = "200")
     @Operation(summary = "멤버 조회")
     @GetMapping("/{id}")
-    public ResponseEntity<MemberGetResponse> getMember(@Parameter(description = "멤버의 ID") final @PathVariable("id") Long memberId) {
-        return ResponseEntity.ok(memberService.findById(memberId));
+    @ResponseStatus(OK)
+    public MemberGetResponse getMember(final @Parameter(description = "멤버의 ID") @PathVariable("id") @Positive Long memberId) {
+        return memberService.findById(memberId);
     }
 
     @ApiResponse(responseCode = "201")
     @Operation(summary = "멤버 추가")
     @PostMapping
-    public ResponseEntity<Void> addMember(final @Validated @RequestBody MemberAddRequest request) {
+    public ResponseEntity<Void> addMember(final @RequestBody @Validated MemberAddRequest request) {
         var param = new MemberAddParam(request);
         Long memberId = memberService.save(param);
         return ResponseEntity.created(URI.create(MEMBER_URL + memberId)).build();
@@ -55,7 +63,7 @@ public class MemberController {
 
     @Operation(summary = "소셜로그인 회원가입")
     @PostMapping("/social-signup")
-    public ResponseEntity<Void> socialSignUp(final @Validated @RequestBody SocialSignUpRequest request) {
+    public ResponseEntity<Void> socialSignUp(final @RequestBody @Validated SocialSignUpRequest request) {
         var param = new SocialSignUpParam(request);
         Long memberId = memberService.socialSignUp(param);
         return ResponseEntity.created(URI.create(MEMBER_URL + memberId)).build();
@@ -64,123 +72,128 @@ public class MemberController {
     @ApiResponse(responseCode = "204", description = "수정됨")
     @Operation(summary = "멤버 수정")
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateMember(final @PathVariable("id") Long memberId, final @RequestBody MemberUpdateRequest request) {
+    @ResponseStatus(NO_CONTENT)
+    public void updateMember(final @PathVariable("id") @Positive Long memberId,
+                             final @RequestBody @Validated MemberUpdateRequest request) {
         var param = new MemberUpdateParam(request);
         memberService.update(memberId, param);
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "멤버 리뷰 평점 조회")
     @GetMapping("/{id}/score")
-    public ResponseEntity<MemberScoreResponse> getMemberScore(@PathVariable("id") final Long memberId) {
-        return ResponseEntity.ok(memberService.getMemberScore(memberId));
+    @ResponseStatus(OK)
+    public MemberScoreResponse getMemberScore(final @PathVariable("id") @Positive Long memberId) {
+        return memberService.getMemberScore(memberId);
     }
 
     @Operation(summary = "멤버 구인 구직 횟수 조회")
     @GetMapping("/{id}/RRCount")
-    public ResponseEntity<MemberRRCountResponse> getMemberRRCount(@PathVariable("id") final Long memberId) {
-        return ResponseEntity.ok(memberService.getMemberRRCount(memberId));
+    @ResponseStatus(OK)
+    public MemberRRCountResponse getMemberRRCount(final @PathVariable("id") @Positive Long memberId) {
+        return memberService.getMemberRRCount(memberId);
     }
 
     @Operation(summary = "비밀번호 찾기 - 멤버 비밀번호 수정")
     @PatchMapping("/{id}/passwordUpdate")
-    public ResponseEntity<Void> updateMemberPasswd(@PathVariable("id") final Long memberId, @RequestBody final MemberPasswdUpdateRequest request) {
+    @ResponseStatus(NO_CONTENT)
+    public void updateMemberPasswd(final @PathVariable("id") @Positive Long memberId, final @RequestBody @Validated MemberPasswdUpdateRequest request) {
         memberService.updatePasswd(memberId, request.password());
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "마이페이지 - 멤버 비밀번호 수정")
     @PatchMapping("/mypage/{id}/password-update")
-    public ResponseEntity<Void> mypageUpdateMemberPasswd(@PathVariable("id") final Long memberId, @RequestBody final MemberPasswdUpdateRequest request) {
+    @ResponseStatus(NO_CONTENT)
+    public void mypageUpdateMemberPasswd(final @PathVariable("id") @Positive Long memberId, final @RequestBody @Validated MemberPasswdUpdateRequest request) {
         memberService.updatePasswd(memberId, request.password());
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "멤버 탈퇴")
     @PatchMapping("/{id}/draw")
-    public ResponseEntity<Void> withDraw(@PathVariable("id") final Long memberId) {
+    @ResponseStatus(NO_CONTENT)
+    public void withDraw(final @PathVariable("id") @Positive Long memberId) {
         memberService.draw(memberId);
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "멤버 정지")
     @PatchMapping("/{id}/ban")
-    public ResponseEntity<Void> banMember(@PathVariable("id") final Long memberId) {
+    @ResponseStatus(NO_CONTENT)
+    public void banMember(final @PathVariable("id") @Positive Long memberId) {
         memberService.ban(memberId);
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "멤버 복구")
     @PatchMapping("{id}/general")
-    public ResponseEntity<Void> generalMember(@PathVariable("id") final Long memberId) {
+    @ResponseStatus(NO_CONTENT)
+    public void generalMember(final @PathVariable("id") @Positive Long memberId) {
         memberService.general(memberId);
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "멤버 검색")
     @GetMapping("/search")
-    public ResponseEntity<Page<MemberListResponse>> search(
+    @ResponseStatus(OK)
+    public Page<MemberListResponse> search(
             @RequestParam(required = false) final String name,
             @RequestParam(required = false) final String nickname,
-            @RequestParam(required = false) final String email,
+            @RequestParam(required = false) @Email final String email,
             @RequestParam(required = false) final Integer reportedCnt,
             Pageable pageable
     ) {
-        Page<MemberListResponse> list = memberService.findBySearchCond(name, nickname, email, reportedCnt, pageable);
-        return ResponseEntity.ok(list);
+        return memberService.findBySearchCond(name, nickname, email, reportedCnt, pageable);
     }
 
     @Operation(summary = "닉네임 중복 확인")
     @GetMapping("/check-nickname")
-    public ResponseEntity<NicknameCheckResponse> checkNickname(
-            @RequestParam final String nickname
-    ) {
-        return ResponseEntity.ok(memberService.NicknameCheck(nickname));
+    @ResponseStatus(OK)
+    public NicknameCheckResponse checkNickname(final @RequestParam @NotBlank String nickname) {
+        return memberService.NicknameCheck(nickname);
     }
 
     @Operation(summary = "이메일 중복 확인")
     @GetMapping("/check-email")
-    public ResponseEntity<EmailCheckResponse> checkEmail(
-            @RequestParam final String email
-    ) {
-        return ResponseEntity.ok(memberService.EmailCheck(email));
+    @ResponseStatus(OK)
+    public EmailCheckResponse checkEmail(final @RequestParam @Email String email) {
+        return memberService.EmailCheck(email);
     }
 
     @Operation(summary = "이메일 찾기")
     @PostMapping("/find-email")
-    public ResponseEntity<FindEmailResponse> findEmail(@RequestBody final FindEmailRequest request) {
-        return ResponseEntity.ok(memberService.findEmail(request.name(), request.phoneNumber()));
+    @ResponseStatus(OK)
+    public FindEmailResponse findEmail(final @RequestBody @Validated FindEmailRequest request) {
+        return memberService.findEmail(request.name(), request.phoneNumber());
     }
 
     @Operation(summary = "비밀번호 찾기")
     @PostMapping("/find-passwd")
-    public ResponseEntity<FindPasswdResponse> findPasswd(@RequestBody final FindPasswdRequest request) {
-        return ResponseEntity.ok(memberService.findPasswd(request.name(), request.email()));
+    @ResponseStatus(OK)
+    public FindPasswdResponse findPasswd(final @RequestBody @Validated FindPasswdRequest request) {
+        return memberService.findPasswd(request.name(), request.email());
     }
 
     @Operation(summary = "프로파일")
     @GetMapping("/{nickname}/dashboard")
-    public ResponseEntity<ProfileResponse> profile(@PathVariable("nickname") final String nickname) {
-        return ResponseEntity.ok(memberService.findProfile(nickname));
+    @ResponseStatus(OK)
+    public ProfileResponse profile(final @PathVariable("nickname") @NotBlank String nickname) {
+        return memberService.findProfile(nickname);
     }
 
     @Operation(summary = "마이페이지 - 주소 선택? 동네 설정?")
     @PatchMapping("/{id}/selected-addresses")
-    public ResponseEntity<Void> updateSelectedAddresses(
-        @PathVariable("id") final Long memberId, @RequestBody final UpdateSelectedAddrRequest request ) {
+    @ResponseStatus(NO_CONTENT)
+    public void updateSelectedAddresses(final @PathVariable("id") @Positive Long memberId, final @RequestBody @Validated UpdateSelectedAddrRequest request) {
         memberService.updateSeletedAddr(memberId, request.selectedAddresses());
-        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "마이페이지 - 내 주소, 선택 주소 요청")
     @GetMapping("/{id}/addresses")
-    public ResponseEntity<AddressesGetResponse> getAddresses(@PathVariable("id") final Long memberId) {
-        return ResponseEntity.ok(memberService.getAddressesByMemberId(memberId));
+    @ResponseStatus(OK)
+    public AddressesGetResponse getAddresses(final @PathVariable("id") @Positive Long memberId) {
+        return memberService.getAddressesByMemberId(memberId);
     }
 
     @Operation(summary = "마이페이지 - 좌측 사이드바 사용자 데이터 요청")
     @GetMapping("/{id}/sidebar-info")
-    public ResponseEntity<SideBarInfoResponse> getSideBarInfo(@PathVariable("id") final Long memberId) {
-        return ResponseEntity.ok(memberService.getSidebarinfoBy(memberId));
+    @ResponseStatus(OK)
+    public SideBarInfoResponse getSideBarInfo(final @PathVariable("id") @Positive Long memberId) {
+        return memberService.getSidebarinfoBy(memberId);
     }
 }

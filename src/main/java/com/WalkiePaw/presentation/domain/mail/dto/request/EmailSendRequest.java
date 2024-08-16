@@ -1,9 +1,6 @@
 package com.WalkiePaw.presentation.domain.mail.dto.request;
 
-import lombok.Getter;
+import jakarta.validation.constraints.Email;
 
-@Getter
-public class EmailSendRequest {
-
-    private String email;
+public record EmailSendRequest(@Email String email) {
 }

@@ -7,14 +7,19 @@ import com.WalkiePaw.presentation.domain.report.boardReportDto.response.BoardRep
 import com.WalkiePaw.presentation.domain.report.boardReportDto.response.BoardReportListResponse;
 import com.WalkiePaw.presentation.domain.report.boardReportDto.BoardReportAddParam;
 import com.WalkiePaw.presentation.domain.report.boardReportDto.BoardReportUpdateParam;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+
+import static org.springframework.http.HttpStatus.*;
 
 @RestController
 @RequestMapping("/api/v1/boardReports")
@@ -22,52 +27,52 @@ import java.net.URI;
 public class BoardReportController {
 
     private final BoardReportService boardReportService;
-    private static final String BOARD_REPORT_URL = "/boardReports/";
+    private static final String BOARD_REPORT_URL = "/api/v1/boardReports/";
 
     @GetMapping
-    public ResponseEntity<Page<BoardReportListResponse>> boardReportList(Pageable pageable) {
-        var response = boardReportService.findAll(pageable);
-        return ResponseEntity.ok().body(response);
+    @ResponseStatus(OK)
+    public Page<BoardReportListResponse> boardReportList(Pageable pageable) {
+        return boardReportService.findAll(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BoardReportGetResponse> getBoardReport(final @PathVariable("id") Long boardReportId) {
-        var response = boardReportService.findById(boardReportId);
-        return ResponseEntity.ok().body(response);
+    @ResponseStatus(OK)
+    public BoardReportGetResponse getBoardReport(final @PathVariable("id") @Positive Long boardReportId) {
+        return boardReportService.findById(boardReportId);
     }
 
     @PostMapping
-    public ResponseEntity<Void> addBoardReport(final @Validated @RequestBody BoardReportAddRequest request) {
+    public ResponseEntity<Void> addBoardReport(final @RequestBody @Validated BoardReportAddRequest request) {
         var param = new BoardReportAddParam(request);
         Long boardReportId = boardReportService.save(param);
         return ResponseEntity.created(URI.create(BOARD_REPORT_URL + boardReportId)).build();
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateBoardReport(final @PathVariable("id") Long boardReportId, final @Validated @RequestBody BoardReportUpdateRequest request) {
+    @ResponseStatus(NO_CONTENT)
+    public void updateBoardReport(final @PathVariable("id") @Positive Long boardReportId, final @RequestBody @Validated BoardReportUpdateRequest request) {
         var param = new BoardReportUpdateParam(request);
         boardReportService.update(boardReportId, param);
-        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/blind")
-    public ResponseEntity<Void> blindBoardReport(final @PathVariable("id") Long boardReportId) {
+    @ResponseStatus(NO_CONTENT)
+    public void blindBoardReport(final @PathVariable("id") @Positive Long boardReportId) {
         boardReportService.blind(boardReportId);
-        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/ignore")
-    public ResponseEntity<Void> ignoreBoardReport(@PathVariable("id") final Long boardReportId) {
+    @ResponseStatus(NO_CONTENT)
+    public void ignoreBoardReport(final @PathVariable("id") @Positive Long boardReportId) {
         boardReportService.ignore(boardReportId);
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/list")
-    public ResponseEntity<Page<BoardReportListResponse>> list(
-            @RequestParam(required = false) final String status, // RESOLVED, UNRESOLVED
+    @ResponseStatus(OK)
+    public Page<BoardReportListResponse> list(
+            final @RequestParam(required = false) @NotBlank String status, // RESOLVED, UNRESOLVED
             Pageable pageable
     ) {
-        var list = boardReportService.findAllByResolvedCond(status, pageable);
-        return ResponseEntity.ok(list);
+        return boardReportService.findAllByResolvedCond(status, pageable);
     }
 }

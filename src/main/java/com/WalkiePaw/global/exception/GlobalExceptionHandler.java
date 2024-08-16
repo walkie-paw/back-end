@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.ArrayList;
@@ -29,6 +30,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ex.getBindingResult().getFieldErrors().forEach(e -> errors.put(e.getField(), e.getDefaultMessage()));
         return ResponseEntity.badRequest().body(new BindingErrorResponse(INVALID_REQUEST.getCode(), INVALID_REQUEST.getMessage(), errors));
     }
+
+    /**
+     * TODO: 구현 필요
+     */
+    @Override
+    protected ResponseEntity<Object> handleHandlerMethodValidationException(HandlerMethodValidationException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        return super.handleHandlerMethodValidationException(ex, headers, status, request);
+    }
+
+    /**
+     * TODO: ConstraintViolationException handler 만들기
+     */
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ExceptionResponse> badRequestExceptionHandler(final BadRequestException e) {

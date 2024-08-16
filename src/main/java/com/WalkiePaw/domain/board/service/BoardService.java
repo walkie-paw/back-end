@@ -15,6 +15,9 @@ import com.WalkiePaw.presentation.domain.board.dto.BoardUpdateParam;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardGetResponse;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardListResponse;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardMypageListResponse;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Set;
@@ -33,13 +37,14 @@ import static com.WalkiePaw.global.exception.ExceptionCode.*;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
+@Validated
 public class BoardService {
 
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final BoardPhotoRepository boardPhotoRepository;
 
-    public Slice<BoardListResponse> findAllBoardAndMember(final Long memberId, final BoardCategory category, Pageable pageable) {
+    public Slice<BoardListResponse> findAllBoardAndMember(final @Positive Long memberId, final @NotNull BoardCategory category, Pageable pageable) {
         if (memberId == null) {
             return boardRepository.findAllNotDeleted(category, pageable);
         } else {
@@ -48,7 +53,7 @@ public class BoardService {
     }
 
     @Transactional
-    public Long save(final BoardAddParam param, final Long memberId) {
+    public Long save(final @Validated BoardAddParam param, final @Positive Long memberId) {
         boolean existsMember = memberRepository.existsById(memberId);
         if (!existsMember) {
             throw new BadRequestException(NOT_FOUND_MEMBER_ID);
@@ -66,11 +71,11 @@ public class BoardService {
         List<BoardPhoto> boardPhotos = request.stream()
                 .map(i -> new BoardPhoto(i.getUrl(), board.getId()))
                 .toList();
-        boardPhotoRepository.saveByIdIn(boardPhotos);
+        boardPhotoRepository.saveAll(boardPhotos);
     }
 
 
-    public BoardGetResponse getBoard(final Long boardId) {
+    public BoardGetResponse getBoard(final @Positive Long boardId) {
         Board board = boardRepository.getBoardDetail(boardId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_ID));
 
@@ -83,7 +88,7 @@ public class BoardService {
     }
 
     @Transactional
-    public void updateBoard(final Long boardId, final BoardUpdateParam param) {
+    public void updateBoard(final @Positive Long boardId, final @Validated BoardUpdateParam param) {
         Board findBoard = boardRepository.findWithPhotoBy(boardId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_ID));
         updateFindBoardDetails(param, findBoard);
@@ -117,22 +122,25 @@ public class BoardService {
     }
 
     @Transactional
-    public void updateBoardStatus(final Long boardId, final BoardStatus status) {
+    public void updateBoardStatus(final @Positive Long boardId, final @NotNull BoardStatus status) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_ID));
         board.updateStatus(status);
     }
 
     @Transactional
-    public void deleteBoard(final Long boardId) {
+    public void deleteBoard(final @Positive Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_BOARD_ID));
         board.delete();
     }
 
     public Slice<BoardListResponse> findBySearchCond(
-            final Long memberId,
-            final String title, final String content, final BoardCategory category, Pageable pageable) {
+            final @Positive Long memberId,
+            final String title,
+            final String content,
+            final BoardCategory category,
+            Pageable pageable) {
         if (memberId == null) {
             return boardRepository.findBySearchCond(title, content, category, pageable);
         } else {
@@ -140,7 +148,10 @@ public class BoardService {
         }
     }
 
-    public Page<BoardMypageListResponse> findMyBoardsBy(final Long memberId, final BoardCategory category, Pageable pageable) {
+    public Page<BoardMypageListResponse> findMyBoardsBy(
+            final @Positive Long memberId,
+            final @NotNull BoardCategory category,
+            Pageable pageable) {
         return boardRepository.findMyBoardsBy(memberId, category, pageable);
     }
 }

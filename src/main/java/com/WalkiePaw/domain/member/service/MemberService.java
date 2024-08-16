@@ -4,18 +4,20 @@ import com.WalkiePaw.domain.mail.service.MailService;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.global.exception.BadRequestException;
-import com.WalkiePaw.presentation.domain.member.dto.MemberUpdateParam;
 import com.WalkiePaw.presentation.domain.member.dto.MemberAddParam;
+import com.WalkiePaw.presentation.domain.member.dto.MemberUpdateParam;
 import com.WalkiePaw.presentation.domain.member.dto.SocialSignUpParam;
-import com.WalkiePaw.presentation.domain.member.dto.request.*;
 import com.WalkiePaw.presentation.domain.member.dto.response.*;
 import com.WalkiePaw.security.CustomPasswordEncoder;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,7 +28,7 @@ import static com.WalkiePaw.global.exception.ExceptionCode.*;
 @Service
 @Transactional
 @RequiredArgsConstructor
-@Slf4j
+@Validated
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -42,19 +44,19 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberGetResponse findById(final Long memberId) {
+    public MemberGetResponse findById(final @Positive Long memberId) {
         return MemberGetResponse.from(memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         ));
     }
 
-    public Long save(final MemberAddParam param) {
+    public Long save(final @Validated MemberAddParam param) {
         Member member = MemberAddParam.toEntity(param);
         passwordEncoder.encodePassword(member);
         return memberRepository.save(member).getId();
     }
 
-    public void update(final Long id, final MemberUpdateParam param) {
+    public void update(final @Positive Long id, final @Validated MemberUpdateParam param) {
         Member member = memberRepository.findById(id).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
@@ -62,20 +64,20 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public MemberScoreResponse getMemberScore(final Long memberId) {
+    public MemberScoreResponse getMemberScore(final @Positive Long memberId) {
         return MemberScoreResponse.from(memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         ));
     }
 
     @Transactional(readOnly = true)
-    public MemberRRCountResponse getMemberRRCount(final Long memberId) {
+    public MemberRRCountResponse getMemberRRCount(final @Positive Long memberId) {
         return MemberRRCountResponse.from(memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         ));
     }
 
-    public void updatePasswd(final Long memberId, final String password) {
+    public void updatePasswd(final @Positive Long memberId, final @NotBlank String password) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
@@ -84,52 +86,57 @@ public class MemberService {
     }
 
     @Transactional(readOnly = true)
-    public Member findByEmail(final String email) {
+    public Member findByEmail(final @Email String email) {
         return memberRepository.findByEmail(email).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_EMAIL)
         );
     }
 
-    public void draw(final Long memberId) {
+    public void draw(final @Positive Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
         member.withdraw();
     }
 
-    public void ban(final Long memberId) {
+    public void ban(final @Positive Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
         member.ban();
     }
 
-    public void general(final Long memberId) {
+    public void general(final @Positive Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
         member.general();
     }
 
-    public Page<MemberListResponse> findBySearchCond(final String name, final String nickname, final String email, final Integer reportedCnt, Pageable pageable) {
+    public Page<MemberListResponse> findBySearchCond(
+            final String name,
+            final String nickname,
+            final @Email String email,
+            final @Positive Integer reportedCnt,
+            Pageable pageable) {
         return memberRepository.findBySearchCond(name, nickname, email, reportedCnt, pageable);
     }
 
-    public NicknameCheckResponse NicknameCheck(final String nickname) {
+    public NicknameCheckResponse NicknameCheck(final @NotBlank String nickname) {
         return memberRepository.findByNickname(nickname)
                 .map(m -> new NicknameCheckResponse(NCheckResult.DUPLICATED))
                 .orElse(new NicknameCheckResponse(NCheckResult.AVAILABLE));
     }
 
 
-    public FindEmailResponse findEmail(final String name, final String phoneNumber) {
+    public FindEmailResponse findEmail(final @NotBlank String name, final @NotBlank String phoneNumber) {
         Member member = memberRepository.findByNameAndPhoneNumber(name, phoneNumber).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
         return new FindEmailResponse(maskedMail(member.getEmail()));
     }
 
-    public FindPasswdResponse findPasswd(final String email, final String name) {
+    public FindPasswdResponse findPasswd(final @Email String email, final @NotBlank String name) {
         Optional<Member> member = memberRepository.findByEmailAndName(email, name);
         if(member.isEmpty()) {
             return new FindPasswdResponse(FindPasswdResult.USER_NOT_FOUND);
@@ -150,7 +157,7 @@ public class MemberService {
         return new FindPasswdResponse(FindPasswdResult.SUCCESS);
     }
 
-    private String maskedMail(String email) {
+    private String maskedMail(final @Email String email) {
         int atIndex = email.indexOf('@');
         String beforeAt = email.substring(0, atIndex);
         String afterAt = email.substring(atIndex);
@@ -159,7 +166,7 @@ public class MemberService {
         return visible + masked + afterAt;
     }
 
-    public EmailCheckResponse EmailCheck(final String email) {
+    public EmailCheckResponse EmailCheck(final @Email String email) {
         Optional<Member> member = memberRepository.findByEmail(email);
         if (member.isEmpty()) {
             return new EmailCheckResponse(EmailCheckResult.AVAILABLE);
@@ -168,35 +175,35 @@ public class MemberService {
         }
     }
 
-    public ProfileResponse findProfile(final String nickanme) {
+    public ProfileResponse findProfile(final @NotBlank String nickanme) {
         return ProfileResponse.from(memberRepository.findByNickname(nickanme).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_NICKNAME)
                 )
         );
     }
 
-    public Long socialSignUp(final SocialSignUpParam param) {
+    public Long socialSignUp(final @Validated SocialSignUpParam param) {
         Member member = memberRepository.findByEmail(param.getEmail()).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_EMAIL)
         );
         return member.updateBySocialSignUpRequest(param);
     }
 
-    public void updateSeletedAddr(final Long memberId, final String selectedAddresses) {
+    public void updateSeletedAddr(final @Positive Long memberId, final @NotBlank String selectedAddresses) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
         member.updateSelectedAdrrs(selectedAddresses);
     }
 
-    public AddressesGetResponse getAddressesByMemberId(Long memberId) {
+    public AddressesGetResponse getAddressesByMemberId(final @Positive Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
             () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );
         return AddressesGetResponse.from(member);
     }
 
-    public SideBarInfoResponse getSidebarinfoBy(Long memberId) {
+    public SideBarInfoResponse getSidebarinfoBy(final @Positive Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(
                 () -> new BadRequestException(NOT_FOUND_MEMBER_ID)
         );

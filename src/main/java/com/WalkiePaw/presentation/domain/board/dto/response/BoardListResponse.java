@@ -76,6 +76,29 @@ public class BoardListResponse {
         this.isLiked = isLiked;
     }
 
+    public BoardListResponse(
+            final Long id, final String title, final String content,
+            final String location, final int price, final PriceType priceType,
+            final LocalDateTime endTime, final LocalDateTime startTime, final int likeCount,
+            final String memberNickName, final BoardStatus status, final BoardCategory category,
+            final boolean priceProposal, final String photoUrls, final String memberPhoto) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.location = location;
+        this.price = price;
+        this.priceType = priceType;
+        this.endTime = endTime;
+        this.startTime = startTime;
+        this.likeCount = likeCount;
+        this.memberNickName = memberNickName;
+        this.status = status;
+        this.category = category;
+        this.priceProposal = priceProposal;
+        this.photoUrls = photoUrls;
+        this.memberPhoto = memberPhoto;
+    }
+
     public static BoardListResponse from(final Board board, final Member member, final boolean isLiked) {
         return new BoardListResponse(
                 board.getId(), board.getTitle(), board.getContent(), board.getLocation(),

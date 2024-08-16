@@ -28,7 +28,7 @@ public class Board extends BaseEntity {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private long viewCount;
-    private long likeCount;
+    private int likeCount;
     private String location;
     private String detailedLocation;
     @Enumerated(EnumType.STRING)
@@ -91,7 +91,7 @@ public class Board extends BaseEntity {
         this.status = status;
     }
 
-    public void updateBoardLike(final long likeCount) {
+    public void updateBoardLike(final int likeCount) {
         this.likeCount = likeCount;
     }
 

@@ -6,44 +6,46 @@ import com.WalkiePaw.domain.board.repository.BoardRepository;
 import com.WalkiePaw.domain.chatroom.entity.Chatroom;
 import com.WalkiePaw.domain.chatroom.entity.ChatroomStatus;
 import com.WalkiePaw.domain.chatroom.repository.ChatroomRepository;
-import com.WalkiePaw.global.exception.BadRequestException;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
+import com.WalkiePaw.global.exception.BadRequestException;
 import com.WalkiePaw.presentation.domain.chatroom.dto.ChatroomAddParam;
 import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomListResponse;
 import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomRespnose;
 import com.WalkiePaw.presentation.domain.chatroom.dto.response.TransactionResponse;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import static com.WalkiePaw.global.exception.ExceptionCode.*;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Validated
 @Transactional(readOnly = true)
 public class ChatroomService {
     private final ChatroomRepository chatroomRepository;
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public Slice<ChatroomListResponse> findAllByMemberId(final Long memberId, Pageable pageable) {
+    public Slice<ChatroomListResponse> findAllByMemberId(final @Positive Long memberId, Pageable pageable) {
         return chatroomRepository.findByMemberId(memberId, pageable);
     }
 
     @Transactional
-    public Long saveChatroom(final ChatroomAddParam param) {
+    public Long saveChatroom(final @Validated ChatroomAddParam param) {
         existsBoard(param);
         existsMember(param);
         Chatroom chatroom = ChatroomAddParam.toEntity(param.getBoardId(), param.getSenderId(), param.getRecipientId());
         return chatroomRepository.save(chatroom).getId();
     }
 
-    private void existsMember(final ChatroomAddParam param) {
+    private void existsMember(final @Validated ChatroomAddParam param) {
         boolean existsRecipient = memberRepository.existsById(param.getRecipientId());
         boolean existsSender = memberRepository.existsById(param.getSenderId());
         if (!existsSender || !existsRecipient) {
@@ -51,7 +53,7 @@ public class ChatroomService {
         }
     }
 
-    private void existsBoard(final ChatroomAddParam param) {
+    private void existsBoard(final @Validated ChatroomAddParam param) {
         boolean existsBoard = boardRepository.existsById(param.getBoardId());
         if (!existsBoard) {
             throw new BadRequestException(NOT_FOUND_BOARD_ID);
@@ -61,7 +63,7 @@ public class ChatroomService {
     /**
      * TODO - 로직 수정하기
      */
-    public ChatroomRespnose findChatroomById(final Long memberId, final Long boardId) {
+    public ChatroomRespnose findChatroomById(final @Positive Long memberId, final @Positive Long boardId) {
         Chatroom chatroom = chatroomRepository.findBySenderIdAndBoardId(memberId, boardId)
                 .orElseGet(() ->
                         chatroomRepository.findByRecipientIdAndBoardId(memberId, boardId)
@@ -69,14 +71,14 @@ public class ChatroomService {
         return ChatroomRespnose.toEntity(chatroom);
     }
 
-    public Page<TransactionResponse> findTransaction(final Long memberId, final Pageable pageable) {
+    public Page<TransactionResponse> findTransaction(final @Positive Long memberId, final Pageable pageable) {
         return chatroomRepository.findTransaction(memberId, pageable);
     }
 
     @Transactional
     public void updateChatroomStatus(
-            final Long chatroomId,
-            final BoardStatus status
+            final @Positive Long chatroomId,
+            final @NotNull BoardStatus status
     ) {
         Chatroom chatroom = chatroomRepository.findChatroomAndBoardById(chatroomId)
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHATROOM_ID));

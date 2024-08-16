@@ -1,6 +1,8 @@
 package com.WalkiePaw.presentation.domain.member.dto;
 
 import com.WalkiePaw.presentation.domain.member.dto.request.SocialSignUpRequest;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -9,11 +11,11 @@ import java.time.LocalDate;
 @Getter
 public class SocialSignUpParam {
 
-    private final String email;
-    private final String nickname;
-    private final String phoneNumber;
+    private final @Email String email;
+    private final @NotBlank String nickname;
+    private final @NotBlank String phoneNumber;
     private final LocalDate birth;
-    private final String address;
+    private final @NotBlank String address;
     private final String profile;
     private final String photo;
 

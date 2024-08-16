@@ -2,35 +2,37 @@ package com.WalkiePaw.presentation.domain.board.dto;
 
 import com.WalkiePaw.domain.board.entity.PriceType;
 import com.WalkiePaw.presentation.domain.board.dto.request.BoardUpdateRequest;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
 public class BoardUpdateParam {
-
-    private final String title;
-    private final String content;
+    private final @NotBlank String title;
+    private final @NotBlank String content;
     private final int price;
-    private final PriceType priceType;
+    private final @NotNull PriceType priceType;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
-    private final String location;
-    private final String detailedLocation;
+    private final @NotBlank String location;
+    private final @NotBlank String detailedLocation;
     private final boolean priceProposal;
-    private List<ImageDto> photoUrls;
+    private final List<ImageDto> photoUrls;
 
     public BoardUpdateParam(final BoardUpdateRequest request) {
-        this.title = request.getTitle();
-        this.content = request.getContent();
-        this.price = request.getPrice();
-        this.priceType = request.getPriceType();
-        this.startTime = request.getStartTime();
-        this.endTime = request.getEndTime();
-        this.location = request.getLocation();
-        this.detailedLocation = request.getDetailedLocation();
-        this.priceProposal = request.isPriceProposal();
-        this.photoUrls = request.getPhotoUrls();
+        this.title = request.title();
+        this.content = request.content();
+        this.price = request.price();
+        this.priceType = request.priceType();
+        this.startTime = request.startTime();
+        this.endTime = request.endTime();
+        this.location = request.location();
+        this.detailedLocation = request.detailedLocation();
+        this.priceProposal = request.priceProposal();
+        this.photoUrls = request.photoUrls();
     }
 }

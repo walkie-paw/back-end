@@ -8,5 +8,5 @@ import java.util.List;
 public interface BoardPhotoRepository extends JpaRepository<BoardPhoto, Long> {
     List<BoardPhoto> findAllByboardId(Long boardId);
 
-    void saveByIdIn(List<BoardPhoto> boardPhotos);
+//    void saveAll(List<BoardPhoto> boardPhotos);
 }
