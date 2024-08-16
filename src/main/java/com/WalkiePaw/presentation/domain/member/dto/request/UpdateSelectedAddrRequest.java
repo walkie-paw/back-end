@@ -1,4 +1,6 @@
 package com.WalkiePaw.presentation.domain.member.dto.request;
 
-public record UpdateSelectedAddrRequest(String selectedAddresses) {
+import jakarta.validation.constraints.NotBlank;
+
+public record UpdateSelectedAddrRequest(@NotBlank String selectedAddresses) {
 }

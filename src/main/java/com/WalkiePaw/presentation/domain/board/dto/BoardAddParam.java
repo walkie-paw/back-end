@@ -4,40 +4,49 @@ import com.WalkiePaw.domain.board.entity.Board;
 import com.WalkiePaw.domain.board.entity.BoardCategory;
 import com.WalkiePaw.domain.board.entity.PriceType;
 import com.WalkiePaw.presentation.domain.board.dto.request.BoardAddRequest;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
+@Getter
 public class BoardAddParam {
 
+    @NotBlank
     private final String title;
+    @NotBlank
     private final String content;
+    @Positive
     private final int price;
+    @NotNull
     private final BoardCategory category;
+    @NotNull
     private final PriceType priceType;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
+    @NotBlank
     private final String location;
+    @NotBlank
     private final String detailedLocation;
     private final boolean priceProposal;
     private final List<ImageDto> images;
 
     public BoardAddParam(BoardAddRequest request) {
-        this.title = request.getTitle();
-        this.content = request.getContent();
-        this.price = request.getPrice();
-        this.category = request.getCategory();
-        this.priceType = request.getPriceType();
-        this.startTime = request.getStartTime();
-        this.endTime = request.getEndTime();
-        this.location = request.getLocation();
-        this.detailedLocation = request.getDetailedLocation();
-        this.priceProposal = request.isPriceProposal();
-        this.images = request.getPhotoUrls();
+        this.title = request.title();
+        this.content = request.content();
+        this.price = request.price();
+        this.category = request.category();
+        this.priceType = request.priceType();
+        this.startTime = request.startTime();
+        this.endTime = request.endTime();
+        this.location = request.location();
+        this.detailedLocation = request.detailedLocation();
+        this.priceProposal = request.priceProposal();
+        this.images = request.photoUrls();
     }
 
     /**

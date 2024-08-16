@@ -45,13 +45,13 @@ public class ChatService {
 
     @Transactional
     public ChatMsgListResponse saveChatMsg(final Long chatroomId, final ChatAddRequest request) {
-        Chatroom chatroom = chatroomRepository.findWithMemberById(chatroomId, request.getWriterId())
+        Chatroom chatroom = chatroomRepository.findWithMemberById(chatroomId, request.writerId())
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHATROOM_ID));
-        Member member = memberRepository.findById(request.getWriterId())
+        Member member = memberRepository.findById(request.writerId())
                 .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
-        chatroom.updateLatestMessage(request.getContent());
+        chatroom.updateLatestMessage(request.content());
         ChatMessage chatMsg = request.toEntity(request, chatroomId);
-        return ChatMsgListResponse.from(chatMsgRepository.save(chatMsg), request.getNickname());
+        return ChatMsgListResponse.from(chatMsgRepository.save(chatMsg), request.nickname());
     }
 
     public void bulkUpdateIsRead(final Long chatroomId) {

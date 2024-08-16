@@ -123,7 +123,7 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                                 member.photo.as("memberPhoto")))
                         .from(board)
                         .leftJoin(member).on(board.memberId.eq(member.id))
-                        .where(board.status.ne(BoardStatus.DELETED).and(board.category.eq(category)))
+                        .where(board.status.ne(BoardStatus.DELETED))
                         .where(
                                 titleCond(title),
                                 contentCond(content),

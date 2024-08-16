@@ -11,89 +11,92 @@ import com.WalkiePaw.presentation.domain.board.dto.request.BoardUpdateRequest;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardGetResponse;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardListResponse;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardMypageListResponse;
-import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
+import static org.springframework.http.HttpStatus.*;
+
 
 @RestController
 @RequiredArgsConstructor
-@Slf4j
 @RequestMapping("/api/v1/boards")
 public class BoardController {
 
     private final BoardService boardService;
-    private static final String BOARD_URL = "/boards/";
+    private static final String BOARD_URL = "/api/v1/boards/";
 
     @Trace
     @GetMapping("/list/{category}")
-    public ResponseEntity<Slice<BoardListResponse>> getBoardList(
+    @ResponseStatus(OK)
+    public Slice<BoardListResponse> getBoardList(
             final @PathVariable BoardCategory category,
-            final @RequestParam(required = false) Long memberId,
+            final @RequestParam(required = false) @Positive Long memberId,
             Pageable pageable) {
-        Slice<BoardListResponse> boardListResponses = boardService.findAllBoardAndMember(memberId, category, pageable);
-        return ResponseEntity.ok(boardListResponses);
+        return boardService.findAllBoardAndMember(memberId, category, pageable);
     }
 
     @GetMapping("/mypage/{memberId}/{category}")
-    public ResponseEntity<Page<BoardMypageListResponse>> mypageList(
-            @PathVariable Long memberId,
-            @PathVariable BoardCategory category,
+    @ResponseStatus(OK)
+    public Page<BoardMypageListResponse> mypageList(
+            final @PathVariable @Positive Long memberId,
+            final @PathVariable BoardCategory category,
             Pageable pageable
     ) {
-        Page<BoardMypageListResponse> boards = boardService.findMyBoardsBy(memberId, category, pageable);
-        return ResponseEntity.ok(boards);
+        return boardService.findMyBoardsBy(memberId, category, pageable);
     }
 
     @PostMapping
-    public ResponseEntity<Void> addBoard(final @Valid @RequestBody BoardAddRequest request) {
+    public ResponseEntity<Void> addBoard(final @Validated @RequestBody BoardAddRequest request) {
         BoardAddParam boardAddParam = new BoardAddParam(request);
-
-        Long saveId = boardService.save(boardAddParam, request.getMemberId());
+        Long saveId = boardService.save(boardAddParam, request.memberId());
         return ResponseEntity.created(URI.create(BOARD_URL + saveId)).build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BoardGetResponse> getBoard(final @PathVariable("id") Long boardId) {
-        BoardGetResponse response = boardService.getBoard(boardId);
-        return ResponseEntity.ok(response);
+    @ResponseStatus(OK)
+    public BoardGetResponse getBoard(final @PathVariable("id") @Positive Long boardId) {
+        return boardService.getBoard(boardId);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateBoard(final @PathVariable("id") Long boardId, final @RequestBody BoardUpdateRequest request) {
+    @ResponseStatus(NO_CONTENT)
+    public void updateBoard(
+            final @PathVariable("id") @Positive Long boardId,
+            final @RequestBody @Validated BoardUpdateRequest request) {
         BoardUpdateParam param = new BoardUpdateParam(request);
         boardService.updateBoard(boardId, param);
-        return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/status")
-    public ResponseEntity<Void> updateBoardStatus(final @RequestBody BoardStatusUpdateRequest request) {
-        boardService.updateBoardStatus(request.getBoardId(), request.getStatus());
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(NO_CONTENT)
+    public void updateBoardStatus(final @RequestBody @Validated BoardStatusUpdateRequest request) {
+        boardService.updateBoardStatus(request.boardId(), request.status());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBoard(final @PathVariable("id") Long boardId) {
+    @ResponseStatus(NO_CONTENT)
+    public void deleteBoard(final @PathVariable("id") @Positive Long boardId) {
         boardService.deleteBoard(boardId);
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Slice<BoardListResponse>> searchBoard(
-            final @RequestParam(required = false) Long memberId,
+    @ResponseStatus(OK)
+    public Slice<BoardListResponse> searchBoard(
+            final @RequestParam(required = false) @Positive Long memberId,
             final @RequestParam(required = false) String title,
             final @RequestParam(required = false) String content,
             final @RequestParam(required = false) BoardCategory category,
             Pageable pageable
     ) {
-        Slice<BoardListResponse> list = boardService.findBySearchCond(memberId, title, content, category, pageable);
-        return ResponseEntity.ok(list);
+        return boardService.findBySearchCond(memberId, title, content, category, pageable);
     }
 }

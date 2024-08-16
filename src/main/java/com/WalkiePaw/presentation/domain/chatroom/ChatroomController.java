@@ -7,57 +7,59 @@ import com.WalkiePaw.presentation.domain.chatroom.dto.request.ChatroomStatusUpda
 import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomListResponse;
 import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomRespnose;
 import com.WalkiePaw.presentation.domain.chatroom.dto.response.TransactionResponse;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
-@Controller
+import static org.springframework.http.HttpStatus.*;
+
+@RestController
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/v1/chatrooms")
 public class ChatroomController {
     private final ChatroomService chatroomService;
-    private static final String CHATROOM_URI = "/chatrooms/";
+    private static final String CHATROOM_URI = "/api/v1/chatrooms/";
 
     @GetMapping
-    public ResponseEntity<Slice<ChatroomListResponse>> getChatroomList(@RequestParam("id") final Long memberId, Pageable pageable) {
-        var chatrooms = chatroomService.findAllByMemberId(memberId, pageable);
-        return ResponseEntity.ok(chatrooms);
+    @ResponseStatus(OK)
+    public Slice<ChatroomListResponse> getChatroomList(@RequestParam("id") @Positive final Long memberId, Pageable pageable) {
+        System.out.println("memberId = " + memberId);
+        return chatroomService.findAllByMemberId(memberId, pageable);
     }
 
     @PostMapping
-    public ResponseEntity<Void> addChatroom(final @RequestBody ChatroomAddRequest request) {
+    public ResponseEntity<Void> addChatroom(final @RequestBody @Validated ChatroomAddRequest request) {
         var param = new ChatroomAddParam(request);
         Long id = chatroomService.saveChatroom(param);
         return ResponseEntity.created(URI.create(CHATROOM_URI + id)).build();
     }
 
     @GetMapping("/{memberId}")
-    public ResponseEntity<ChatroomRespnose> getChatroom(final @PathVariable Long memberId, final @RequestParam("board_id") Long boardId) {
-        ChatroomRespnose chatroomById = chatroomService.findChatroomById(memberId, boardId);
-        return ResponseEntity.ok(chatroomById);
+    @ResponseStatus(OK)
+    public ChatroomRespnose getChatroom(final @PathVariable @Positive Long memberId, final @RequestParam("board_id") @Positive Long boardId) {
+        return chatroomService.findChatroomById(memberId, boardId);
     }
 
     @GetMapping("/{id}/transaction")
-    public ResponseEntity<Page<TransactionResponse>> getTransaction(final @PathVariable("id") Long memberId, Pageable pageable) {
-        var transaction = chatroomService.findTransaction(memberId, pageable);
-        return ResponseEntity.ok(transaction);
+    @ResponseStatus(OK)
+    public Page<TransactionResponse> getTransaction(final @PathVariable("id") @Positive Long memberId, Pageable pageable) {
+        return chatroomService.findTransaction(memberId, pageable);
     }
 
     @PatchMapping("/change-status")
-    public ResponseEntity<Void> updateChatroomStatus(
-            final @RequestBody ChatroomStatusUpdateRequest request
-            ) {
+    @ResponseStatus(NO_CONTENT)
+    public void updateChatroomStatus(final @RequestBody @Validated ChatroomStatusUpdateRequest request) {
         chatroomService.updateChatroomStatus(request.chatroomId(), request.status());
-        return ResponseEntity.noContent().build();
     }
-
-
 }

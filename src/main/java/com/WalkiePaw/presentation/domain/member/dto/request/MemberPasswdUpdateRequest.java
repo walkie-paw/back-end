@@ -1,4 +1,7 @@
 package com.WalkiePaw.presentation.domain.member.dto.request;
 
-public record MemberPasswdUpdateRequest(String password) {
+import jakarta.validation.constraints.NotBlank;
+
+public record MemberPasswdUpdateRequest(
+        @NotBlank String password) {
 }

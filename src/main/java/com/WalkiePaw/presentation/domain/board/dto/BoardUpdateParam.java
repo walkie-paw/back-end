@@ -22,15 +22,15 @@ public class BoardUpdateParam {
     private List<ImageDto> photoUrls;
 
     public BoardUpdateParam(final BoardUpdateRequest request) {
-        this.title = request.getTitle();
-        this.content = request.getContent();
-        this.price = request.getPrice();
-        this.priceType = request.getPriceType();
-        this.startTime = request.getStartTime();
-        this.endTime = request.getEndTime();
-        this.location = request.getLocation();
-        this.detailedLocation = request.getDetailedLocation();
-        this.priceProposal = request.isPriceProposal();
-        this.photoUrls = request.getPhotoUrls();
+        this.title = request.title();
+        this.content = request.content();
+        this.price = request.price();
+        this.priceType = request.priceType();
+        this.startTime = request.startTime();
+        this.endTime = request.endTime();
+        this.location = request.location();
+        this.detailedLocation = request.detailedLocation();
+        this.priceProposal = request.priceProposal();
+        this.photoUrls = request.photoUrls();
     }
 }

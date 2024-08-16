@@ -1,4 +1,9 @@
 package com.WalkiePaw.presentation.domain.member.dto.request;
 
-public record FindPasswdRequest (String name, String email) {
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+public record FindPasswdRequest (
+        @NotBlank String name,
+        @Email String email) {
 }

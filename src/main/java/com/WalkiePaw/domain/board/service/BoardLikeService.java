@@ -60,16 +60,16 @@ public class BoardLikeService {
 
     @Scheduled(fixedDelay = 600000)
     public void countBoardLike() {
-        Map<Long, Long> counts = boardLikeRepository.countAllBoardLike().stream()
+        Map<Long, Integer> likeCounts = boardLikeRepository.countAllBoardLike().stream()
                 .collect(Collectors.toMap(
-                        c -> c[BOARD_ID_INDEX],
-                        c -> c[LIKE_COUNT]
+                        c -> (Long) c[BOARD_ID_INDEX],
+                        c -> (Integer) c[LIKE_COUNT]
                 ));
 
         Set<Long> batchBoardId = new HashSet<>();
         Set<Board> boards = new HashSet<>();
 
-        for (Long boardId : counts.keySet()) {
+        for (Long boardId : likeCounts.keySet()) {
             batchBoardId.add(boardId);
             if (batchBoardId.size() == BATCH_SIZE) {
                 boards.addAll(boardRepository.findAllByIdIn(batchBoardId));
@@ -82,7 +82,7 @@ public class BoardLikeService {
         }
 
         boards.forEach(
-                b -> b.updateBoardLike(counts.get(b.getId())));
+                b -> b.updateBoardLike(likeCounts.get(b.getId())));
 
     }
 }

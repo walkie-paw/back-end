@@ -15,6 +15,7 @@ import com.WalkiePaw.presentation.domain.board.dto.BoardUpdateParam;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardGetResponse;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardListResponse;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardMypageListResponse;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Set;
@@ -33,13 +35,14 @@ import static com.WalkiePaw.global.exception.ExceptionCode.*;
 @RequiredArgsConstructor
 @Slf4j
 @Transactional(readOnly = true)
+@Validated
 public class BoardService {
 
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final BoardPhotoRepository boardPhotoRepository;
 
-    public Slice<BoardListResponse> findAllBoardAndMember(final Long memberId, final BoardCategory category, Pageable pageable) {
+    public Slice<BoardListResponse> findAllBoardAndMember(final @Positive Long memberId, final BoardCategory category, Pageable pageable) {
         if (memberId == null) {
             return boardRepository.findAllNotDeleted(category, pageable);
         } else {
@@ -66,7 +69,7 @@ public class BoardService {
         List<BoardPhoto> boardPhotos = request.stream()
                 .map(i -> new BoardPhoto(i.getUrl(), board.getId()))
                 .toList();
-        boardPhotoRepository.saveByIdIn(boardPhotos);
+        boardPhotoRepository.saveAll(boardPhotos);
     }
 
 

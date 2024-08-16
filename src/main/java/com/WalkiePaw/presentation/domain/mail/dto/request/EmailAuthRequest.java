@@ -1,10 +1,7 @@
 package com.WalkiePaw.presentation.domain.mail.dto.request;
 
-import lombok.Getter;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
-@Getter
-public class EmailAuthRequest {
-
-    private String email;
-    private String authNum;
+public record EmailAuthRequest(@Email String email, @NotBlank String authNum) {
 }

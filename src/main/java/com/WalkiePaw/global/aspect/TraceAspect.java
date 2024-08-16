@@ -21,6 +21,6 @@ public class TraceAspect {
         long startTime = System.currentTimeMillis();
         joinPoint.proceed();
         long endTime = System.currentTimeMillis();
-        log.debug("[{}] {} end - {}", uuid, joinPoint.getSignature(), endTime - startTime);
+        log.debug("[{}] {} end - {}ms", uuid, joinPoint.getSignature(), endTime - startTime);
     }
 }

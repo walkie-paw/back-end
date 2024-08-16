@@ -1,6 +1,9 @@
 package com.WalkiePaw.presentation.domain.chatroom.dto.request;
 
-import lombok.Data;
+import jakarta.validation.constraints.Positive;
 
-public record ChatroomAddRequest(Long boardId, Long senderId, Long recipientId) {
+public record ChatroomAddRequest(
+        @Positive Long boardId,
+        @Positive Long senderId,
+        @Positive Long recipientId) {
 }

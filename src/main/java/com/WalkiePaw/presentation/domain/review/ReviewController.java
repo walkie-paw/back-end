@@ -7,15 +7,20 @@ import com.WalkiePaw.presentation.domain.review.dto.response.ReviewDetailRespons
 import com.WalkiePaw.presentation.domain.review.dto.response.ReviewListResponse;
 import com.WalkiePaw.presentation.domain.review.dto.request.ReviewSaveRequest;
 import com.WalkiePaw.presentation.domain.review.dto.request.ReviewUpdateRequest;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+
+import static org.springframework.http.HttpStatus.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -23,46 +28,46 @@ import java.net.URI;
 @RequestMapping("/api/v1/reviews")
 public class ReviewController {
 
-    public static final String REVIEWS_URI = "/reviews/";
+    public static final String REVIEWS_URI = "/api/v1/reviews/";
     private final ReviewService reviewService;
 
     @GetMapping("/{id}/reviewee")
-    public ResponseEntity<Slice<ReviewListResponse>> getReviewsByRevieweeId(
+    @ResponseStatus(OK)
+    public Slice<ReviewListResponse> getReviewsByRevieweeId(
             Pageable pageable,
-            @PathVariable("id") final Long revieweeId,
-            @RequestParam("category") BoardCategory category
+            final @PathVariable("id") @Positive Long revieweeId,
+            final @RequestParam("category") BoardCategory category
     ) {
-        var reviews = reviewService.findByRevieweeId(pageable, revieweeId, category);
-        return ResponseEntity.ok(reviews);
+        return reviewService.findByRevieweeId(pageable, revieweeId, category);
     }
 
     @GetMapping("/{id}/reviewer")
-    public ResponseEntity<Slice<ReviewListResponse>> getReviewsByReviewerId(
+    @ResponseStatus(OK)
+    public Slice<ReviewListResponse> getReviewsByReviewerId(
             Pageable pageable,
-            @PathVariable("id") final Long reviewerId,
-            @RequestParam("category") BoardCategory category
+            final @PathVariable("id") @Positive Long reviewerId,
+            final @RequestParam("category") BoardCategory category
     ) {
-        var reviews = reviewService.findByReviewerId(pageable, reviewerId, category);
-        return ResponseEntity.ok(reviews);
+        return reviewService.findByReviewerId(pageable, reviewerId, category);
     }
 
     @PostMapping
-    public ResponseEntity<Void> saveReview(final @RequestBody ReviewSaveRequest request) {
+    public ResponseEntity<Void> saveReview(final @RequestBody @Validated ReviewSaveRequest request) {
         ReviewSaveParam param = new ReviewSaveParam(request);
         Long id = reviewService.addReview(param);
         return ResponseEntity.created(URI.create(REVIEWS_URI + id)).build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ReviewDetailResponse> getReview(final @PathVariable Long id) {
-        var response = reviewService.findById(id);
-        return ResponseEntity.ok(response);
+    @ResponseStatus(OK)
+    public ReviewDetailResponse getReview(final @PathVariable @Positive Long id) {
+        return reviewService.findById(id);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateReview(final @PathVariable Long id, final @RequestBody ReviewUpdateRequest request) {
+    @ResponseStatus(NO_CONTENT)
+    public void updateReview(final @PathVariable @Positive Long id, final @RequestBody @Validated ReviewUpdateRequest request) {
         reviewService.updateReview(id, request.content(), request.point());
-        return ResponseEntity.noContent().build();
     }
     
 }

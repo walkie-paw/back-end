@@ -14,11 +14,11 @@ public class ReviewSaveParam {
     private final BoardCategory category;
 
     public ReviewSaveParam(ReviewSaveRequest request) {
-        this.point = request.getPoint();
-        this.content = request.getContent();
-        this.chatroomId = request.getChatroomId();
-        this.reviewerId = request.getReviewerId();
-        this.category = request.getCategory();
+        this.point = request.point();
+        this.content = request.content();
+        this.chatroomId = request.chatroomId();
+        this.reviewerId = request.reviewerId();
+        this.category = request.category();
     }
 
     public static Review toEntity(final ReviewSaveParam param, final Long chatroomId, final Long revieweeId, final Long reviewerId) {
