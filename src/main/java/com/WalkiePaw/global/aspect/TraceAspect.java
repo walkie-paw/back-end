@@ -15,12 +15,15 @@ public class TraceAspect {
      * @Trace 붙은 메소드 시간 측정
      */
     @Around("@annotation(com.WalkiePaw.global.aspect.annotation.Trace)")
-    public void doTrace(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object doTrace(ProceedingJoinPoint joinPoint) throws Throwable {
         String uuid = UUID.randomUUID().toString().substring(0, 7);
-        log.debug("[{}] {} start", uuid, joinPoint.getSignature());
         long startTime = System.currentTimeMillis();
-        joinPoint.proceed();
-        long endTime = System.currentTimeMillis();
-        log.debug("[{}] {} end - {}ms", uuid, joinPoint.getSignature(), endTime - startTime);
+        try {
+            log.debug("[{}] {} start", uuid, joinPoint.getSignature());
+            return joinPoint.proceed();
+        } finally {
+            long endTime = System.currentTimeMillis();
+            log.debug("[{}] {} end - {}ms", uuid, joinPoint.getSignature(), endTime - startTime);
+        }
     }
 }
