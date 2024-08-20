@@ -8,7 +8,7 @@ import lombok.Getter;
 
 @Getter
 public class ReviewSaveParam {
-    private final @Positive @Max(5) int point;
+    private final @PositiveOrZero @Max(5) int point;
     private final @NotBlank String content;
     private final @Positive Long chatroomId;
     private final @Positive Long reviewerId;

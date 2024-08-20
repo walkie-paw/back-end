@@ -96,7 +96,7 @@ public class BoardReportService {
         boardReport.ignore();
     }
 
-    public Page<BoardReportListResponse> findAllByResolvedCond(final @NotBlank String status, Pageable pageable) {
+    public Page<BoardReportListResponse> findAllByResolvedCond(final @NotBlank String status, final Pageable pageable) {
         return boardReportRepository.findAllByResolvedCond(status, pageable);
     }
 }

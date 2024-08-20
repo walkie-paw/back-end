@@ -4,10 +4,9 @@ import com.WalkiePaw.domain.board.entity.Board;
 import com.WalkiePaw.domain.board.entity.BoardCategory;
 import com.WalkiePaw.domain.board.entity.PriceType;
 import com.WalkiePaw.presentation.domain.board.dto.request.BoardAddRequest;
-import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -16,26 +15,19 @@ import java.util.List;
 @Getter
 public class BoardAddParam {
 
-    @NotBlank
-    private final String title;
-    @NotBlank
-    private final String content;
-    @Positive
-    private final int price;
-    @NotNull
-    private final BoardCategory category;
-    @NotNull
-    private final PriceType priceType;
+    private final @NotBlank String title;
+    private final @NotBlank String content;
+    private final @PositiveOrZero int price;
+    private final @NotNull BoardCategory category;
+    private final @NotNull PriceType priceType;
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
-    @NotBlank
-    private final String location;
-    @NotBlank
-    private final String detailedLocation;
+    private final @NotBlank String location;
+    private final @NotBlank String detailedLocation;
     private final boolean priceProposal;
     private final List<ImageDto> images;
 
-    public BoardAddParam(BoardAddRequest request) {
+    public BoardAddParam(final BoardAddRequest request) {
         this.title = request.title();
         this.content = request.content();
         this.price = request.price();

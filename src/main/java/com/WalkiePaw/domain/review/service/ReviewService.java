@@ -11,18 +11,14 @@ import com.WalkiePaw.global.exception.BadRequestException;
 import com.WalkiePaw.presentation.domain.review.dto.ReviewSaveParam;
 import com.WalkiePaw.presentation.domain.review.dto.response.ReviewDetailResponse;
 import com.WalkiePaw.presentation.domain.review.dto.response.ReviewListResponse;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
+import static com.WalkiePaw.global.exception.ExceptionCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,9 +33,9 @@ public class ReviewService {
     @Transactional
     public Long addReview(final @Validated ReviewSaveParam param) {
         Chatroom chatroom = chatroomRepository.findWithMemberById(param.getChatroomId(), param.getReviewerId())
-                .orElseThrow(() -> new IllegalStateException("잘못된 채팅방 번호입니다."));
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_CHATROOM_ID));
         Member reviewer = memberRepository.findById(param.getReviewerId())
-                .orElseThrow(() -> new IllegalStateException("잘못된 회원 번호입니다."));
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_MEMBER_ID));
 
         Review review = null;
         if (chatroom.getSenderId().equals(reviewer.getId())) {
@@ -59,22 +55,22 @@ public class ReviewService {
 
     public ReviewDetailResponse findById(final @Positive Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalStateException("잘못된 리뷰 번호입니다."));
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_REVIEW_ID));
         return ReviewDetailResponse.from(review);
     }
 
     @Transactional
-    public void updateReview(final @Positive Long reviewId, final @NotBlank String content, final @Positive @Max(5) int point) {
+    public void updateReview(final @Positive Long reviewId, final @NotBlank String content, final @PositiveOrZero @Max(5) int point) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new IllegalStateException("잘못된 리뷰 번호입니다."));
+                .orElseThrow(() -> new BadRequestException(NOT_FOUND_REVIEW_ID));
         review.update(content, point);
     }
 
-    public Slice<ReviewListResponse> findByReviewerId(Pageable pageable, final @Positive Long reviewerId, final @NotNull BoardCategory category) {
-        return reviewRepository.findByReviewerIdAndCategory(pageable, reviewerId, category);
+    public Slice<ReviewListResponse> findByReviewerId(final @PositiveOrZero int pageSize, final @Positive Long cursor, final @Positive Long reviewerId, final @NotNull BoardCategory category) {
+        return reviewRepository.findByReviewerIdAndCategory(pageSize, cursor, reviewerId, category);
     }
 
-    public Slice<ReviewListResponse> findByRevieweeId(Pageable pageable, final @Positive Long revieweeId, final @NotNull BoardCategory category) {
-        return reviewRepository.findByRevieweeIdAndCategory(pageable, revieweeId, category);
+    public Slice<ReviewListResponse> findByRevieweeId(final @PositiveOrZero int pageSize, final @Positive Long cursor, final @Positive Long revieweeId, final @NotNull BoardCategory category) {
+        return reviewRepository.findByRevieweeIdAndCategory(pageSize, cursor, revieweeId, category);
     }
 }

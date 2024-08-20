@@ -98,7 +98,7 @@ public class MemberReportService {
         memberReport.ignore();
     }
 
-    public Page<MemberReportListResponse> findAllByCond(final @NotBlank String status, Pageable pageable) {
+    public Page<MemberReportListResponse> findAllByCond(final @NotBlank String status, final Pageable pageable) {
         return memberReportRepository.findAllByCond(status, pageable);
     }
 }

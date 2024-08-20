@@ -5,16 +5,15 @@ import com.WalkiePaw.presentation.domain.board.dto.request.BoardLikeRequest;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardListResponse;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,8 +25,12 @@ public class BoardLikeController {
 
     @GetMapping("/{memberId}")
     @ResponseStatus(OK)
-    public Slice<BoardListResponse> findLikeBoardList(final @PathVariable @Positive Long memberId, Pageable pageable) {
-        return boardLikeService.findLikeBoardList(memberId, pageable);
+    public Slice<BoardListResponse> findLikeBoardList(
+            final @PathVariable @Positive Long memberId,
+            final @RequestParam("page_size") int pageSize,
+            final @RequestParam Long cursor
+    ) {
+        return boardLikeService.findLikeBoardList(memberId, pageSize, cursor);
     }
 
     /**

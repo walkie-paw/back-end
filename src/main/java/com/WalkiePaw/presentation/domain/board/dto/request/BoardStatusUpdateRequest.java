@@ -5,6 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 public record BoardStatusUpdateRequest(
-        @Positive @NotNull Long boardId,
+        @Positive Long boardId,
         @NotNull BoardStatus status) {
 }

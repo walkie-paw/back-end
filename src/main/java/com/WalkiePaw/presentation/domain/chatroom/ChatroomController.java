@@ -7,21 +7,20 @@ import com.WalkiePaw.presentation.domain.chatroom.dto.request.ChatroomStatusUpda
 import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomListResponse;
 import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomRespnose;
 import com.WalkiePaw.presentation.domain.chatroom.dto.response.TransactionResponse;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,9 +32,12 @@ public class ChatroomController {
 
     @GetMapping
     @ResponseStatus(OK)
-    public Slice<ChatroomListResponse> getChatroomList(@RequestParam("id") @Positive final Long memberId, Pageable pageable) {
-        System.out.println("memberId = " + memberId);
-        return chatroomService.findAllByMemberId(memberId, pageable);
+    public Slice<ChatroomListResponse> getChatroomList(
+            final @RequestParam("id") @Positive Long memberId,
+            final @RequestParam("page_size") int pageSize,
+            final @RequestParam Long cursor
+    ) {
+        return chatroomService.findAllByMemberId(memberId, pageSize, cursor);
     }
 
     @PostMapping
