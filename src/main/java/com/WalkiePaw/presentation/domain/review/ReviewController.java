@@ -44,10 +44,10 @@ public class ReviewController {
     @GetMapping("/{id}/reviewer")
     @ResponseStatus(OK)
     public Slice<ReviewListResponse> getReviewsByReviewerId(
-            final @RequestParam("page_size") int pageSize,
-            final @RequestParam Long cursor,
             final @PathVariable("id") @Positive Long reviewerId,
-            final @RequestParam("category") BoardCategory category
+            final @RequestParam("category") BoardCategory category,
+            final @RequestParam("page_size") int pageSize,
+            final @RequestParam(required = false) Long cursor
     ) {
         return reviewService.findByReviewerId(pageSize, cursor, reviewerId, category);
     }

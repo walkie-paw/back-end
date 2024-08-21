@@ -41,7 +41,7 @@ public class BoardController {
             final @PathVariable BoardCategory category,
             final @RequestParam(required = false) @Positive Long memberId,
             final @RequestParam("page_size") int pageSize,
-            final @RequestParam Long cursor
+            final @RequestParam(required = false) Long cursor
     ) {
         return boardService.findAllBoards(memberId, category, pageSize, cursor);
     }
@@ -73,7 +73,8 @@ public class BoardController {
     @ResponseStatus(NO_CONTENT)
     public void updateBoard(
             final @PathVariable("id") @Positive Long boardId,
-            final @RequestBody @Validated BoardUpdateRequest request) {
+            final @RequestBody @Validated BoardUpdateRequest request
+    ) {
         BoardUpdateParam param = new BoardUpdateParam(request);
         boardService.updateBoard(boardId, param);
     }
@@ -98,7 +99,7 @@ public class BoardController {
             final @RequestParam(required = false) String content,
             final @RequestParam(required = false) BoardCategory category,
             final @RequestParam("page_size") int pageSize,
-            final @RequestParam Long cursor
+            final @RequestParam(required = false) Long cursor
     ) {
         return boardService.findBySearchCond(memberId, title, content, category, pageSize, cursor);
     }

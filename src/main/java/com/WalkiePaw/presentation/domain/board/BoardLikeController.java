@@ -28,7 +28,7 @@ public class BoardLikeController {
     public Slice<BoardListResponse> findLikeBoardList(
             final @PathVariable @Positive Long memberId,
             final @RequestParam("page_size") int pageSize,
-            final @RequestParam Long cursor
+            final @RequestParam(required = false) Long cursor
     ) {
         return boardLikeService.findLikeBoardList(memberId, pageSize, cursor);
     }

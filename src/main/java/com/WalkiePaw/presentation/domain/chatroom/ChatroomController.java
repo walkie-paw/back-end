@@ -35,7 +35,7 @@ public class ChatroomController {
     public Slice<ChatroomListResponse> getChatroomList(
             final @RequestParam("id") @Positive Long memberId,
             final @RequestParam("page_size") int pageSize,
-            final @RequestParam Long cursor
+            final @RequestParam(required = false) Long cursor
     ) {
         return chatroomService.findAllByMemberId(memberId, pageSize, cursor);
     }

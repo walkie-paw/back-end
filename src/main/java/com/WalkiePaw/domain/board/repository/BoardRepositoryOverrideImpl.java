@@ -52,7 +52,7 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                                 member.photo.as("memberPhoto")))
                         .from(board)
                         .leftJoin(member).on(board.memberId.eq(member.id))
-                        .where(board.id.lt(cursor))
+                        .where(ltBoardId(cursor))
                         .where(board.status.ne(BoardStatus.DELETED).and(board.category.eq(category)))
                         .orderBy(board.createdDate.desc()));
     }
@@ -80,9 +80,13 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                         ))
                         .from(board)
                         .leftJoin(member).on(board.memberId.eq(member.id))
-                        .where(board.id.lt(cursor))
+                        .where(ltBoardId(cursor))
                         .where(board.status.ne(BoardStatus.DELETED).and(board.category.eq(category)))
                         .orderBy(board.createdDate.desc()));
+    }
+
+    private static BooleanExpression ltBoardId(final Long cursor) {
+        return cursor != null ? board.id.lt(cursor) : null;
     }
 
     private static JPQLQuery<String> getBoardPhoto() {
@@ -127,7 +131,7 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                                 member.photo.as("memberPhoto")))
                         .from(board)
                         .leftJoin(member).on(board.memberId.eq(member.id))
-                        .where(board.id.lt(cursor))
+                        .where(ltBoardId(cursor))
                         .where(board.status.ne(BoardStatus.DELETED))
                         .where(
                                 titleCond(title),
@@ -159,7 +163,7 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                 ))
                 .from(board)
                 .leftJoin(member).on(board.memberId.eq(member.id))
-                .where(board.id.lt(cursor))
+                .where(ltBoardId(cursor))
                 .where(
                         titleCond(title),
                         contentCond(content),
@@ -186,7 +190,9 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                         board.title,
                         board.content,
                         board.createdDate
-                )).from(board).where(board.memberId.eq(memberId).and(board.category.eq(category)))
+                ))
+                .from(board)
+                .where(board.memberId.eq(memberId).and(board.category.eq(category)))
                 .orderBy(board.createdDate.desc()));
     }
 
@@ -214,7 +220,7 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                 .from(boardLike)
                 .leftJoin(board, board).on(boardLike.boardId.eq(board.id))
                 .leftJoin(member, member).on(boardLike.memberId.eq(member.id))
-                .where(board.id.lt(cursor))
+                .where(ltBoardId(cursor))
                 .where(boardLike.memberId.eq(memberId).and(board.status.ne(BoardStatus.DELETED)))
                 .orderBy(board.id.desc()));
     }
