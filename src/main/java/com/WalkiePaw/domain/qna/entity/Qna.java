@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(indexes = @Index(name = "ix_qna_member_id", columnList = "member_id"))
 public class Qna extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -13,6 +13,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = {
+        @Index(name = "ix_review_reviewee_id", columnList = "reviewee_id"),
+        @Index(name = "ix_review_reviewer_id", columnList = "reviewer_id")
+})
 public class Review extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

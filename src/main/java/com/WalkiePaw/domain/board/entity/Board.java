@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = @Index(name = "ix_board_member_id", columnList = "member_id"))
 public class Board extends BaseEntity {
     public static final String DELETED_MSG = "삭제된 게시글입니다."; // msg 처리 필요
 

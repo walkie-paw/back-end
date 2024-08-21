@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString
+@Table(indexes = @Index(name = "ix_member_email", columnList = "email"))
 public class Member extends BaseEntity {
 
     @Id
