@@ -9,15 +9,15 @@ import com.WalkiePaw.domain.board.repository.BoardRepository;
 import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.global.exception.BadRequestException;
-import com.WalkiePaw.presentation.domain.board.dto.ImageDto;
 import com.WalkiePaw.presentation.domain.board.dto.BoardAddParam;
 import com.WalkiePaw.presentation.domain.board.dto.BoardUpdateParam;
+import com.WalkiePaw.presentation.domain.board.dto.ImageDto;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardGetResponse;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardListResponse;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardMypageListResponse;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,7 +31,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.WalkiePaw.global.exception.ExceptionCode.*;
+import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_BOARD_ID;
+import static com.WalkiePaw.global.exception.ExceptionCode.NOT_FOUND_MEMBER_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -44,11 +45,16 @@ public class BoardService {
     private final MemberRepository memberRepository;
     private final BoardPhotoRepository boardPhotoRepository;
 
-    public Slice<BoardListResponse> findAllBoardAndMember(final @Positive Long memberId, final @NotNull BoardCategory category, Pageable pageable) {
+    public Slice<BoardListResponse> findAllBoards(
+            final @Positive Long memberId,
+            final @NotNull BoardCategory category,
+            final @PositiveOrZero int pageSize,
+            final @Positive Long cursor
+    ) {
         if (memberId == null) {
-            return boardRepository.findAllNotDeleted(category, pageable);
+            return boardRepository.findAllNotDeleted(category, pageSize, cursor);
         } else {
-            return boardRepository.findAllNotDeleted(memberId, category, pageable);
+            return boardRepository.findAllNotDeleted(memberId, category, pageSize, cursor);
         }
     }
 
@@ -140,11 +146,13 @@ public class BoardService {
             final String title,
             final String content,
             final BoardCategory category,
-            Pageable pageable) {
+            final int pageSize,
+            final Long cursor
+    ) {
         if (memberId == null) {
-            return boardRepository.findBySearchCond(title, content, category, pageable);
+            return boardRepository.findBySearchCond(title, content, category, pageSize, cursor);
         } else {
-            return boardRepository.findBySearchCond(memberId, title, content, category, pageable);
+            return boardRepository.findBySearchCond(memberId, title, content, category, pageSize, cursor);
         }
     }
 

@@ -72,7 +72,7 @@ public class QnaService {
                 .updateReply(reply);
     }
 
-    public Page<QnaListResponse> findAllByCond(final @NotBlank String status, Pageable pageable) {
+    public Page<QnaListResponse> findAllByCond(final @NotBlank String status, final Pageable pageable) {
         return qnaRepository.findAllByCond(status, pageable);
     }
 

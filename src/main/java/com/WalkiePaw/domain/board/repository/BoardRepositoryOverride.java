@@ -12,17 +12,18 @@ import java.util.Optional;
 
 public interface BoardRepositoryOverride {
 
-    Slice<BoardListResponse> findAllNotDeleted(BoardCategory category, Pageable pageable);
+    Slice<BoardListResponse> findAllNotDeleted(BoardCategory category, int pageSize, Long cursor);
 
-    Slice<BoardListResponse> findBySearchCond(Long memberId, String title, String content, BoardCategory category, Pageable pageable);
+    Slice<BoardListResponse> findAllNotDeleted(Long memberId, BoardCategory category, int pageSize, Long cursor);
 
-    Slice<BoardListResponse> findBySearchCond(String title, String content, BoardCategory category, Pageable pageable);
+    Slice<BoardListResponse> findBySearchCond(Long memberId, String title, String content, BoardCategory category, int pageSize, Long cursor);
+
+    Slice<BoardListResponse> findBySearchCond(String title, String content, BoardCategory category, int pageSize, Long cursor);
 
     Page<BoardMypageListResponse> findMyBoardsBy(Long memberId, BoardCategory category, Pageable pageable);
 
-    Slice<BoardListResponse> findLikeBoardList(Long memberId, Pageable pageable);
+    Slice<BoardListResponse> findLikeBoardList(Long memberId, int pageSize, Long cursor);
 
     Optional<Board> findWithPhotoBy(Long boardId);
 
-    Slice<BoardListResponse> findAllNotDeleted(Long memberId, BoardCategory category, Pageable pageable);
 }

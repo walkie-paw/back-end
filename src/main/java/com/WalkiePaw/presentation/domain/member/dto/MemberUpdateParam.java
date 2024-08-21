@@ -3,10 +3,7 @@ package com.WalkiePaw.presentation.domain.member.dto;
 import com.WalkiePaw.domain.member.entity.Member;
 import com.WalkiePaw.domain.member.entity.MemberStatus;
 import com.WalkiePaw.presentation.domain.member.dto.request.MemberUpdateRequest;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -21,7 +18,7 @@ public class MemberUpdateParam {
     private final @NotBlank String address;
     private final LocalDate birth;
     private final String profile;
-    private final @Positive double rating;
+    private final @PositiveOrZero double rating;
     private final String photo;
     private final @NotNull MemberStatus status;
     private final @Positive int reportedCnt;

@@ -2,6 +2,7 @@ package com.WalkiePaw.presentation.domain.board.dto.response;
 
 import com.WalkiePaw.domain.board.entity.*;
 import com.WalkiePaw.domain.member.entity.Member;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

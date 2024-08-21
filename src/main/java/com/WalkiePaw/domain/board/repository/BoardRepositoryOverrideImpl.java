@@ -1,6 +1,8 @@
 package com.WalkiePaw.domain.board.repository;
 
-import com.WalkiePaw.domain.board.entity.*;
+import com.WalkiePaw.domain.board.entity.Board;
+import com.WalkiePaw.domain.board.entity.BoardCategory;
+import com.WalkiePaw.domain.board.entity.BoardStatus;
 import com.WalkiePaw.global.util.Querydsl4RepositorySupport;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardListResponse;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardMypageListResponse;
@@ -17,8 +19,8 @@ import java.util.Optional;
 
 import static com.WalkiePaw.domain.board.entity.QBoard.board;
 import static com.WalkiePaw.domain.board.entity.QBoardLike.boardLike;
-import static com.WalkiePaw.domain.board.entity.QBoardPhoto.*;
-import static com.WalkiePaw.domain.member.entity.QMember.*;
+import static com.WalkiePaw.domain.board.entity.QBoardPhoto.boardPhoto;
+import static com.WalkiePaw.domain.member.entity.QMember.member;
 import static org.springframework.util.StringUtils.hasText;
 
 @Repository
@@ -29,8 +31,8 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
     }
 
     @Override
-    public Slice<BoardListResponse> findAllNotDeleted(final BoardCategory category, Pageable pageable) {
-        return slice(pageable,
+    public Slice<BoardListResponse> findAllNotDeleted(final BoardCategory category, final int pageSize, final Long cursor) {
+        return slice(pageSize, cursor,
                 slice -> slice
                         .select(Projections.constructor(BoardListResponse.class,
                                 board.id,
@@ -50,12 +52,13 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                                 member.photo.as("memberPhoto")))
                         .from(board)
                         .leftJoin(member).on(board.memberId.eq(member.id))
+                        .where(ltBoardId(cursor))
                         .where(board.status.ne(BoardStatus.DELETED).and(board.category.eq(category)))
                         .orderBy(board.createdDate.desc()));
     }
     @Override
-    public Slice<BoardListResponse> findAllNotDeleted(final Long memberId, final BoardCategory category, Pageable pageable) {
-        return slice(pageable,
+    public Slice<BoardListResponse> findAllNotDeleted(final Long memberId, final BoardCategory category, final int pageSize, final Long cursor) {
+        return slice(pageSize, cursor,
                 slice -> slice
                         .select(Projections.constructor(BoardListResponse.class,
                                 board.id,
@@ -77,8 +80,13 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                         ))
                         .from(board)
                         .leftJoin(member).on(board.memberId.eq(member.id))
+                        .where(ltBoardId(cursor))
                         .where(board.status.ne(BoardStatus.DELETED).and(board.category.eq(category)))
                         .orderBy(board.createdDate.desc()));
+    }
+
+    private static BooleanExpression ltBoardId(final Long cursor) {
+        return cursor != null ? board.id.lt(cursor) : null;
     }
 
     private static JPQLQuery<String> getBoardPhoto() {
@@ -102,8 +110,8 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
     }
 
     @Override
-    public Slice<BoardListResponse> findBySearchCond(String title, String content, BoardCategory category, Pageable pageable) {
-        return slice(pageable,
+    public Slice<BoardListResponse> findBySearchCond(String title, String content, BoardCategory category, final int pageSize, final Long cursor) {
+        return slice(pageSize, cursor,
                 slice -> slice
                         .select(Projections.constructor(BoardListResponse.class,
                                 board.id,
@@ -123,6 +131,7 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                                 member.photo.as("memberPhoto")))
                         .from(board)
                         .leftJoin(member).on(board.memberId.eq(member.id))
+                        .where(ltBoardId(cursor))
                         .where(board.status.ne(BoardStatus.DELETED))
                         .where(
                                 titleCond(title),
@@ -132,8 +141,8 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
     }
 
     @Override
-    public Slice<BoardListResponse> findBySearchCond(final Long memberId, final String title, final String content, final BoardCategory category, Pageable pageable) {
-        return slice(pageable, slice -> slice
+    public Slice<BoardListResponse> findBySearchCond(final Long memberId, final String title, final String content, final BoardCategory category, final int pageSize, final Long cursor) {
+        return slice(pageSize, cursor, slice -> slice
                 .select(Projections.constructor(BoardListResponse.class,
                         board.id,
                         board.title,
@@ -154,6 +163,7 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                 ))
                 .from(board)
                 .leftJoin(member).on(board.memberId.eq(member.id))
+                .where(ltBoardId(cursor))
                 .where(
                         titleCond(title),
                         contentCond(content),
@@ -180,13 +190,15 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                         board.title,
                         board.content,
                         board.createdDate
-                )).from(board).where(board.memberId.eq(memberId).and(board.category.eq(category)))
+                ))
+                .from(board)
+                .where(board.memberId.eq(memberId).and(board.category.eq(category)))
                 .orderBy(board.createdDate.desc()));
     }
 
     @Override
-    public Slice<BoardListResponse> findLikeBoardList(final Long memberId, final Pageable pageable) {
-        return slice(pageable, slice -> slice
+    public Slice<BoardListResponse> findLikeBoardList(final Long memberId, final int pageSize, final Long cursor) {
+        return slice(pageSize, cursor, slice -> slice
                 .select(Projections.constructor(BoardListResponse.class,
                         board.id,
                         board.title,
@@ -208,8 +220,9 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                 .from(boardLike)
                 .leftJoin(board, board).on(boardLike.boardId.eq(board.id))
                 .leftJoin(member, member).on(boardLike.memberId.eq(member.id))
+                .where(ltBoardId(cursor))
                 .where(boardLike.memberId.eq(memberId).and(board.status.ne(BoardStatus.DELETED)))
-                .orderBy(board.createdDate.desc()));
+                .orderBy(board.id.desc()));
     }
 
     public Optional<Board> findWithPhotoBy(Long boardId) {

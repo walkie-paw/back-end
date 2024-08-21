@@ -8,10 +8,9 @@ import com.WalkiePaw.domain.member.Repository.MemberRepository;
 import com.WalkiePaw.global.exception.BadRequestException;
 import com.WalkiePaw.presentation.domain.board.dto.response.BoardListResponse;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -36,8 +35,8 @@ public class BoardLikeService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public Slice<BoardListResponse> findLikeBoardList(final @Positive Long memberId, final Pageable pageable) {
-        return boardRepository.findLikeBoardList(memberId, pageable);
+    public Slice<BoardListResponse> findLikeBoardList(final @Positive Long memberId, final @PositiveOrZero int pageSize, final @Positive Long cursor) {
+        return boardRepository.findLikeBoardList(memberId, pageSize, cursor);
     }
 
     public Long saveBoardLike(final @Positive Long boardId, final Long loginUserId) {
@@ -61,7 +60,7 @@ public class BoardLikeService {
         boardLikeRepository.delete(boardLike);
     }
 
-    @Scheduled(fixedDelay = 600000)
+//    @Scheduled(fixedDelay = 600000)
     public void countBoardLike() {
         Map<Long, Integer> likeCounts = boardLikeRepository.countAllBoardLike().stream()
                 .collect(Collectors.toMap(

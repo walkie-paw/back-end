@@ -118,7 +118,7 @@ public class MemberService {
             final String nickname,
             final @Email String email,
             final @Positive Integer reportedCnt,
-            Pageable pageable) {
+            final Pageable pageable) {
         return memberRepository.findBySearchCond(name, nickname, email, reportedCnt, pageable);
     }
 

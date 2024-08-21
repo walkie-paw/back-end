@@ -14,6 +14,7 @@ import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomRespnose;
 import com.WalkiePaw.presentation.domain.chatroom.dto.response.TransactionResponse;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +34,8 @@ public class ChatroomService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
 
-    public Slice<ChatroomListResponse> findAllByMemberId(final @Positive Long memberId, Pageable pageable) {
-        return chatroomRepository.findByMemberId(memberId, pageable);
+    public Slice<ChatroomListResponse> findAllByMemberId(final @Positive Long memberId, final @PositiveOrZero int pageSize, final @Positive Long cursor) {
+        return chatroomRepository.findByMemberId(memberId, pageSize, cursor);
     }
 
     @Transactional

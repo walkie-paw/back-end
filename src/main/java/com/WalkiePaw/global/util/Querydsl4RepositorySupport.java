@@ -70,55 +70,34 @@ public abstract class Querydsl4RepositorySupport {
      * @return Slice 구현체
      * @param <T> 반환 객체
      */
-    protected <T> Slice<T> slice(Pageable pageable, Function<JPAQueryFactory, JPAQuery> sliceQuery) {
+    protected <T> Slice<T> slice(int pageSize, Long id, Function<JPAQueryFactory, JPAQuery> sliceQuery) {
         List<T> content = ((JPAQuery) sliceQuery.apply(getJpaQueryFactory())
-                        .offset(pageable.getOffset()).limit(sliceSize(pageable))).fetch();
-        boolean hasNext = isHasNext(pageable, content);
+                .limit(sliceSize(pageSize)))
+                .fetch();
+        boolean hasNext = isHasNext(pageSize, content);
+        Pageable pageable = PageRequest.ofSize(pageSize);
         return new SliceImpl<>(content, pageable, hasNext);
     }
 
-    protected static <T> boolean isHasNext(final Pageable pageable, final List<T> content) {
+    protected static <T> boolean isHasNext(final int pageSize, final List<T> content) {
         boolean hasNext = false;
-        if (content.size() > pageable.getPageSize()) {
+        if (content.size() > pageSize) {
             hasNext = true;
-            content.remove(pageable.getPageSize());
+            content.remove(pageSize);
         }
         return hasNext;
     }
 
-    /**
-     *
-     * @param pageable
-     * @param sliceQuery
-     * @param transformer
-     * @return
-     * @param <T>
-     * @param <R>
-     */
-    protected <T, R> Slice<R> slice(Pageable pageable,
-                                    Function<JPAQueryFactory, JPAQuery<T>> sliceQuery,
-                                    Function<T, R> transformer) {
-        List<T> content = sliceQuery.apply(getJpaQueryFactory())
-                .offset(pageable.getOffset()).limit(sliceSize(pageable)).fetch();
-
-        boolean hasNext = isHasNext(pageable, content);
-
-        List<R> transformedContent = content.stream()
-                .map(transformer)
-                .toList();
-        return new SliceImpl<>(transformedContent, pageable, hasNext);
-    }
-
     private static PageRequest sliceWithSort(final Pageable pageable) {
-        return PageRequest.of(pageable.getPageNumber(), sliceSize(pageable), pageable.getSort());
+        return PageRequest.of(pageable.getPageNumber(), sliceSize(pageable.getPageSize()), pageable.getSort());
     }
 
     private static PageRequest sliceWithoutSort(final Pageable pageable) {
-        return PageRequest.of(pageable.getPageNumber(), sliceSize(pageable));
+        return PageRequest.of(pageable.getPageNumber(), sliceSize(pageable.getPageSize()));
     }
 
-    private static int sliceSize(Pageable pageable) {
-        return pageable.getPageSize() + 1;
+    private static int sliceSize(int pageSize) {
+        return pageSize + 1;
     }
 
     protected <T> Page<T> page(Pageable pageable, Function<JPAQueryFactory, JPAQuery> pageQuery) {

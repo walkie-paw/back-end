@@ -6,6 +6,7 @@ import com.WalkiePaw.global.util.Querydsl4RepositorySupport;
 import com.WalkiePaw.presentation.domain.chatroom.dto.response.ChatroomListResponse;
 import com.WalkiePaw.presentation.domain.chatroom.dto.response.TransactionResponse;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,7 @@ import java.util.Optional;
 
 import static com.WalkiePaw.domain.board.entity.QBoard.board;
 import static com.WalkiePaw.domain.chatroom.entity.ChatroomStatus.COMPLETED;
-import static com.WalkiePaw.domain.chatroom.entity.QChatroom.*;
+import static com.WalkiePaw.domain.chatroom.entity.QChatroom.chatroom;
 import static com.WalkiePaw.domain.member.entity.QMember.member;
 import static com.WalkiePaw.domain.review.entity.QReview.review;
 
@@ -29,8 +30,8 @@ public class ChatroomRepositoryOverrideImpl extends Querydsl4RepositorySupport i
     }
 
     @Override
-    public Slice<ChatroomListResponse> findByMemberId(final Long memberId, Pageable pageable) {
-        return slice(pageable,
+    public Slice<ChatroomListResponse> findByMemberId(final Long memberId, final int pageSize, final Long cursor) {
+        return slice(pageSize, cursor,
                 query -> query.select(
                                 Projections.constructor(ChatroomListResponse.class,
                                         chatroom.id,
@@ -59,6 +60,7 @@ public class ChatroomRepositoryOverrideImpl extends Querydsl4RepositorySupport i
 //                                                .as("memberId")
                                 ))
                         .from(chatroom)
+                        .where(ltChatroomId(cursor))
                         .where(chatroom.senderId.eq(memberId).or(chatroom.recipientId.eq(memberId))));
     }
 
@@ -103,4 +105,7 @@ public class ChatroomRepositoryOverrideImpl extends Querydsl4RepositorySupport i
                 .fetchFirst());
     }
 
+    private static BooleanExpression ltChatroomId(final Long cursor) {
+        return cursor != null ? chatroom.id.lt(cursor) : null;
+    }
 }

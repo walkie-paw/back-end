@@ -10,7 +10,7 @@ import org.springframework.data.domain.Slice;
 import java.util.Optional;
 
 public interface ChatroomRepositoryOverride {
-    Slice<ChatroomListResponse> findByMemberId(Long memberId, Pageable pageable);
+    Slice<ChatroomListResponse> findByMemberId(Long memberId, int pageSize, Long cursor);
 
     Page<TransactionResponse> findTransaction(Long memberId, Pageable pageable);
 

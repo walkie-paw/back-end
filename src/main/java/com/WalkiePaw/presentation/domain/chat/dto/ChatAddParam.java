@@ -10,16 +10,14 @@ import java.time.LocalDateTime;
 
 @Getter
 public class ChatAddParam {
-    @Positive
-    private final Long writerId;
-    @NotBlank
-    private final String content;
-    @NotBlank
-    private final String nickname;
+
+    private final @Positive Long writerId;
+    private final @NotBlank String content;
+    private final @NotBlank String nickname;
     private final String sentTime;
     private final LocalDateTime createdDate;
 
-    public ChatAddParam(ChatAddRequest request) {
+    public ChatAddParam(final ChatAddRequest request) {
         this.writerId = request.writerId();
         this.content = request.content();
         this.sentTime = request.sentTime();

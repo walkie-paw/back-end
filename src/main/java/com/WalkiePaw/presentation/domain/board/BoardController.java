@@ -16,14 +16,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
+import static org.springframework.http.HttpStatus.OK;
 
 
 @RestController
@@ -40,8 +40,10 @@ public class BoardController {
     public Slice<BoardListResponse> getBoardList(
             final @PathVariable BoardCategory category,
             final @RequestParam(required = false) @Positive Long memberId,
-            Pageable pageable) {
-        return boardService.findAllBoardAndMember(memberId, category, pageable);
+            final @RequestParam("page_size") int pageSize,
+            final @RequestParam(required = false) Long cursor
+    ) {
+        return boardService.findAllBoards(memberId, category, pageSize, cursor);
     }
 
     @GetMapping("/mypage/{memberId}/{category}")
@@ -71,7 +73,8 @@ public class BoardController {
     @ResponseStatus(NO_CONTENT)
     public void updateBoard(
             final @PathVariable("id") @Positive Long boardId,
-            final @RequestBody @Validated BoardUpdateRequest request) {
+            final @RequestBody @Validated BoardUpdateRequest request
+    ) {
         BoardUpdateParam param = new BoardUpdateParam(request);
         boardService.updateBoard(boardId, param);
     }
@@ -95,8 +98,9 @@ public class BoardController {
             final @RequestParam(required = false) String title,
             final @RequestParam(required = false) String content,
             final @RequestParam(required = false) BoardCategory category,
-            Pageable pageable
+            final @RequestParam("page_size") int pageSize,
+            final @RequestParam(required = false) Long cursor
     ) {
-        return boardService.findBySearchCond(memberId, title, content, category, pageable);
+        return boardService.findBySearchCond(memberId, title, content, category, pageSize, cursor);
     }
 }
