@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = @Index(name = "ix_board_photo_board_id", columnList = "board_id"))
 public class BoardPhoto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

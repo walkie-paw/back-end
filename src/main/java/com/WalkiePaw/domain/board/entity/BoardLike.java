@@ -11,6 +11,7 @@ import static jakarta.persistence.FetchType.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = @Index(name = "ix_board_like_board_id", columnList = "board_id"))
 public class BoardLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

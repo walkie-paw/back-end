@@ -1,8 +1,6 @@
 package com.WalkiePaw.domain.chatroom.entity;
 
 import com.WalkiePaw.domain.common.BaseEntity;
-import com.WalkiePaw.domain.member.entity.Member;
-import com.WalkiePaw.domain.board.entity.Board;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,11 +8,13 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static jakarta.persistence.FetchType.*;
-
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(indexes = {
+            @Index(name = "ix_chatroom_recipient_id", columnList = "recipient_id"),
+            @Index(name = "ix_chatroom_sender_id", columnList = "sender_id")
+        })
 public class Chatroom extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
