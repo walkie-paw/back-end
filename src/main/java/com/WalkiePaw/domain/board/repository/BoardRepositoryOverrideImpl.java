@@ -54,7 +54,7 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                         .leftJoin(member).on(board.memberId.eq(member.id))
                         .where(ltBoardId(cursor))
                         .where(board.status.ne(BoardStatus.DELETED).and(board.category.eq(category)))
-                        .orderBy(board.createdDate.desc()));
+                        .orderBy(board.id.desc()));
     }
     @Override
     public Slice<BoardListResponse> findAllNotDeleted(final Long memberId, final BoardCategory category, final int pageSize, final Long cursor) {
@@ -82,9 +82,19 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                         .leftJoin(member).on(board.memberId.eq(member.id))
                         .where(ltBoardId(cursor))
                         .where(board.status.ne(BoardStatus.DELETED).and(board.category.eq(category)))
-                        .orderBy(board.createdDate.desc()));
+                        .orderBy(board.id.desc()));
     }
 
+    /**
+     * 커서 페이징의 커서와 정렬은 같은 키(id)여야 한다.
+     *
+     * <p>예전에는 커서는 {@code id < 마지막으로 본 id} 인데 정렬은 {@code created_date DESC} 였다. 작성 시각이 같은 글이 있거나,
+     * 작성 시각과 id 순서가 뒤바뀐 글(작성 시각은 저장 전에 앱에서, id 는 INSERT 때 정해져 동시 저장 시 뒤바뀔 수 있음)이
+     * 페이지 경계에 오면 다음 페이지에서 글이 빠지거나 겹쳤다.
+     *
+     * <p>정렬을 id 로 맞춘다. {@code created_date} 는 INSERT 때 한 번 정해지고 바뀌지 않아(updatable = false) id 순서와 사실상 같고,
+     * id 는 유일해 같은 값이 없다. 커서 파라미터(id)는 그대로라 API 는 바뀌지 않고, 정렬·범위 조건 모두 PK(클러스터링 인덱스)를 탄다.
+     */
     private static BooleanExpression ltBoardId(final Long cursor) {
         return cursor != null ? board.id.lt(cursor) : null;
     }
@@ -137,7 +147,7 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                                 titleCond(title),
                                 contentCond(content),
                                 categoryCond(category))
-                        .orderBy(board.createdDate.desc()));
+                        .orderBy(board.id.desc()));
     }
 
     @Override
@@ -168,7 +178,7 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
                         titleCond(title),
                         contentCond(content),
                         categoryCond(category))
-                .orderBy(board.createdDate.desc()));
+                .orderBy(board.id.desc()));
     }
 
     private BooleanExpression categoryCond(final BoardCategory category) {

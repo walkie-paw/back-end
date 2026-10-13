@@ -19,6 +19,9 @@ configurations {
 	}
 }
 
+// Boot 3.3.0 기본 Testcontainers(1.19)는 Docker Engine 29 의 최소 API 버전에 못 미쳐 컨테이너를 띄우지 못한다
+ext['testcontainers.version'] = '1.21.4'
+
 repositories {
 	mavenCentral()
 }
@@ -44,6 +47,10 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	// MySQL 컨테이너 테스트 (커서 페이징처럼 MySQL 정렬·잠금 동작에 기대는 쿼리 검증용)
+	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation 'org.testcontainers:mysql'
 
 	// lombok Test 적용
 	testCompileOnly 'org.projectlombok:lombok'
