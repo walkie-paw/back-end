@@ -92,8 +92,12 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
      * 작성 시각과 id 순서가 뒤바뀐 글(작성 시각은 저장 전에 앱에서, id 는 INSERT 때 정해져 동시 저장 시 뒤바뀔 수 있음)이
      * 페이지 경계에 오면 다음 페이지에서 글이 빠지거나 겹쳤다.
      *
-     * <p>정렬을 id 로 맞춘다. {@code created_date} 는 INSERT 때 한 번 정해지고 바뀌지 않아(updatable = false) id 순서와 사실상 같고,
-     * id 는 유일해 같은 값이 없다. 커서 파라미터(id)는 그대로라 API 는 바뀌지 않고, 정렬·범위 조건 모두 PK(클러스터링 인덱스)를 탄다.
+     * <p>정렬을 id 로 맞춘다. id 는 DB 가 INSERT 때 하나씩 매겨(IDENTITY) 겹치지 않으므로, 몰려도 글이 빠지거나 겹치지 않는다.
+     * 순서가 작성 시각과 달라지는 것은 거의 동시에 쓴 글끼리뿐이다(번호를 받은 순서와 커밋 순서가 다를 수 있음).
+     * 커서 파라미터(id)는 그대로라 API 는 바뀌지 않고, 정렬·범위 조건 모두 PK(클러스터링 인덱스)를 탄다.
+     *
+     * <p>전제: id 를 DB 한 대가 INSERT 때 매긴다. 앱이 id 범위를 미리 받아 쓰는 시퀀스(pooled 등)나 쓰기 서버 여러 대로 바꾸면
+     * id 순서가 작성 시각과 크게 어긋나므로, 그때는 (created_date, id) 복합 커서와 같은 순서의 복합 인덱스로 바꿔야 한다.
      */
     private static BooleanExpression ltBoardId(final Long cursor) {
         return cursor != null ? board.id.lt(cursor) : null;
