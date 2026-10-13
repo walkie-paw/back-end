@@ -84,13 +84,7 @@ class BoardCursorPagingTest {
         assertEveryBoardOnce(ids, cursor -> boardRepository.findAllNotDeleted(BoardCategory.JOB_SEARCH, PAGE_SIZE, cursor));
     }
 
-    @Test
-    void 검색_결과도_작성_시각이_같은_글을_한_번씩_돌려준다() {
-        List<Long> ids = saveBoards(BOARD_COUNT);
-        ids.forEach(id -> setCreatedDate(id, BASE));
-
-        assertEveryBoardOnce(ids, cursor -> boardRepository.findBySearchCond("산책", null, BoardCategory.JOB_SEARCH, PAGE_SIZE, cursor));
-    }
+    // 검색 쿼리의 같은 경우는 Full-Text 인덱스가 필요해 BoardFullTextSearchTest 에서 확인한다
 
     private void assertEveryBoardOnce(List<Long> savedIds, Function<Long, Slice<BoardListResponse>> page) {
         List<Long> seen = new ArrayList<>();
