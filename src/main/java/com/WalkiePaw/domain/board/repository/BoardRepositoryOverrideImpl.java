@@ -202,14 +202,14 @@ public class BoardRepositoryOverrideImpl extends Querydsl4RepositorySupport impl
      *
      * <p>LIKE {@code '%검색어%'} 는 인덱스를 못 타지만 id 역순으로 읽다가 한 페이지를 채우면 멈춰, 흔한 검색어("산책")는 빠르고
      * 드문 검색어는 테이블 전체를 훑는다. Full-Text 인덱스는 반대로 맞는 글을 전부 찾은 뒤 id 순으로 정렬해, 드문 검색어는 빠르고
-     * 흔한 검색어는 느리다(100만 건, 첫 페이지: 30% 검색어 LIKE 0.5ms vs Full-Text(MATCH > 0) 약 900ms, 없는 검색어 LIKE 약 550ms vs 0.4ms).
+     * 흔한 검색어는 느리다(100만 건, 첫 페이지: 30% 검색어 LIKE 0.5ms vs Full-Text 약 770ms, 없는 검색어 LIKE 약 560ms vs 0.9ms).
      *
      * <p>그래서 커서 아래 최신 {@value #LIKE_WINDOW}개 id 구간만 LIKE 로 먼저 찾고(구간이 정해져 있어 최대 그만큼만 읽음),
      * 한 페이지를 못 채우면 커서 아래 전체를 Full-Text 로 다시 찾는다. 구간에서 한 페이지가 차는 검색어는 흔한 검색어라
      * LIKE 로 끝나고, 못 채우는 검색어는 맞는 글이 적어 Full-Text 가 빠르다.
      *
-     * <p>같은 데이터에서 혼합 방식: 흔한 검색어는 LIKE 와 같고(0.7–2ms), 0.01% 검색어 61 → 8ms, 없는 검색어 550 → 7ms.
-     * 구간을 겨우 못 채우는 빈도(0.1%)는 두 단계를 다 거쳐 6 → 11ms 로 손해를 본다. 구간 크기는 1만·2만·5만을 재서 골랐다
+     * <p>같은 데이터에서 혼합 방식: 흔한 검색어는 LIKE 와 비슷하고(0.7–3ms), 0.01% 검색어 62 → 8ms, 없는 검색어 560 → 7ms.
+     * 구간을 겨우 못 채우는 빈도(0.1%)는 두 단계를 다 거쳐 6.5 → 10ms 로 손해를 본다. 구간 크기는 1만·2만·5만을 재서 골랐다
      * (클수록 손해 구간의 빈도는 낮아지지만 드문 검색어마다 구간 LIKE 비용이 커짐).
      */
     private Slice<BoardListResponse> search(final String title, final String content, final Long cursor,
